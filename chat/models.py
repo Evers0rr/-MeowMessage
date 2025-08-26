@@ -43,8 +43,33 @@ class GroupMessage(models.Model):
         return f"{self.sender.username}: {self.text or self.file.name}"
 
     def clean(self):
-        if not self.text and not self.file:
-            raise ValidationError("Повідомлення не може бути порожнім.")
+        from django.core.exceptions import ValidationError
+        import os
+
+        if self.content_type == 'text':
+            if not self.text.strip():
+                raise ValidationError("Для текстового повідомлення потрібен текст.")
+            if self.file:
+                raise ValidationError("Текстове повідомлення не може містити файл.")
+            
+        if self.content_type == 'image':
+            if not self.file:
+                raise ValidationError("Для зображення потрібен файл.")
+            ext = os.path.splitext(self.file.name)[1].lower()
+            if ext not in ['.png', '.jpg', '.jpeg', '.gif']:
+                raise ValidationError("Неправильний формат файлу для зображення. Використовуйте PNG, JPG, JPEG або GIF.")
+
+        if self.content_type == 'video':
+            if not self.file:
+                raise ValidationError("Для відео потрібен файл.")
+            ext = os.path.splitext(self.file.name)[1].lower()
+            if ext not in ['.mp4', '.mov', '.avi', '.mkv']:
+                raise ValidationError("Неправильний формат файлу для відео. Використовуйте MP4, MOV, AVI або MKV.")
+
+        if self.content_type == 'file':
+            if not self.file:
+                raise ValidationError("Для повідомлення з файлом потрібно завантажити файл.")
+    
 
 
     class Meta:

@@ -55,8 +55,8 @@ class Group(models.Model):
     def clean(self):
         if self.name.strip() == "":
             raise ValidationError("Назва групи не може бути порожньою.")
-        if not self.description.strip():
-            raise ValidationError("Опис групи не може бути порожнім.")
+        if not self.category:
+            raise ValidationError("Будь ласка, виберіть категорію для групи.")
         if self.avatar and not self.avatar.name.endswith(('.png', '.jpg', '.jpeg', '.gif')):
             raise ValidationError("Непідтримуваний формат зображення. Використовуйте .png, .jpg, .jpeg або .gif.")
 
@@ -78,7 +78,6 @@ class Group(models.Model):
         owner = self.memberships.filter(role="owner").first()
         owner_name = owner.user.username if owner else "Невідомо"
         return f'Назва групи: {self.name} | Власник: {owner_name} | Кількість учасників: {self.members.count()}'
-
         
 class MemberShip(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='memberships')
@@ -96,7 +95,11 @@ class MemberShip(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['user', 'group'], name='unique_membership')
         ]
-         
+
+    def clean(self):
+        if self.user not in self.group.members.all():
+            raise ValidationError("Користувач повинен бути учасником групи, щоб мати членство.")
+  
 class GroupPost(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='posts')
     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE, related_name='group_posts')
@@ -114,11 +117,18 @@ class GroupPost(models.Model):
         ordering = ['-created_at']
 
     def clean(self):
+        membership = self.group.memberships.filter(user=self.author).first()
+
+        if not membership or membership.role not in ["moderator", "admin", "owner"]:
+            raise ValidationError("Тільки модератори або вище можуть створювати пости.")
+
         if not self.content.strip() and not self.image:
             raise ValidationError("Контент посту не може бути порожнім.")
         if self.image and not self.image.name.endswith(('.png', '.jpg', '.jpeg', '.gif')):
             raise ValidationError("Непідтримуваний формат зображення. Використовуйте .png, .jpg, .jpeg або .gif.")
-
+        if self.author not in self.group.members.all():
+            raise ValidationError("Автор посту повинен бути учасником групи.")
+        
 class GroupComment(models.Model):
     post = models.ForeignKey(GroupPost, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='group_comments')
@@ -157,6 +167,8 @@ class GroupJoinRequest(models.Model):
     def clean(self):
         if self.status not in dict(STATUS_CHOICES):
             raise ValidationError("Невірний статус запиту на приєднання.")
+        if self.group.members.filter(id=self.user.id).exists():
+            raise ValidationError("Ви вже є учасником цієї групи.")
 
 class GroupInvitation(models.Model):
     inviter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_invitations')

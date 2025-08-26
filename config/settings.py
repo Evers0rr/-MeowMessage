@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'rest_framework',
     'django_extensions',
-    'core',
     'users',
     'chat',
     'notifications',

@@ -60,6 +60,8 @@ class Friendship(models.Model):
                 name='unique_friendship'
             )
         ]
+        verbose_name = 'Дружба'
+        verbose_name_plural = 'Дружби'
 
     
     
