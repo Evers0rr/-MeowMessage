@@ -1,0 +1,49 @@
+<nav class="navbar">
+  <div class="nav-inner">
+    <a class="brand" href="{% url 'post-list' %}">Meowmessage</a>
+
+    <div class="search">
+      <form action="{% url 'posts:index' %}" method="get">
+        <input type="text" name="q" placeholder="Пошук по постах, групах, людях..." value="{{ request.GET.q }}">
+      </form>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="nav-links" id="navLinks">
+      <a class="nav-link" href="#">Групи</a>
+      <a class="nav-link" href="#">Друзі</a>
+      <a class="nav-link" href="#">Чат</a>
+      <a class="nav-link" href="#">
+        Сповіщення
+        {% if unread_notifications_count and unread_notifications_count > 0 %}
+          <span class="badge">{{ unread_notifications_count }}</span>
+        {% endif %}
+      </a>
+
+      <a class="nav-link" href="#">Відгуки</a>
+
+      {% if request.user.is_authenticated %}
+        <div class="dropdown">
+          <span class="nav-link dropdown-toggle">Обліковий запис </span>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'profile' username=request.user.username %}">Профіль</a>
+            <a class="dropdown-item" href="{% url 'settings' %}">Налаштування</a>
+            <div class="dropdown-sep"></div>
+            <form action="{% url 'logout' %}" method="post" style="margin:0;">
+              {% csrf_token %}
+              <button type="submit" class="dropdown-item" style="width:100%;text-align:left;background:none;border:0;cursor:pointer;color:inherit;">
+                Вийти
+              </button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <a class="nav-link" href="{% url 'login' %}">Увійти</a>
+        <a class="nav-link" href="{% url 'register' %}">Реєстрація</a>
+      {% endif %}
+    </div>
+
+    <button id="mobileToggle" class="mobile-toggle" aria-label="Меню">☰</button>
+  </div>
+</nav>

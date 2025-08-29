@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,25 +7,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block head %}{% endblock %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    {% block extra_css %}{% endblock %}
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
           integrity="sha384"
-          crossorigin="anonymous">
+          crossorigin="anonymous">   
 </head>
 <body>
     <header>
-        <h1>MeowMessage</h1>
         {% block header %}{% endblock %}
     </header>
+
     <nav>
-        {% block nav %}{% endblock %}
+        {% include "base/navbar.html" %}
     </nav>
-    <main>
+
+    <main class="container my-4">
         {% block content %}{% endblock %}
     </main>
-    <footer>
+
+    <footer class="text-center py-3">
         {% block footer %}© 2025 MeowMessage{% endblock %}
     </footer>
-    {% block scripts %}{% endblock %}
+
+    {% block scripts %}
+        <script>
+          const toggleBtn = document.getElementById('mobileToggle');
+          const links = document.getElementById('navLinks');
+
+          if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+              links.classList.toggle('mobile-open');
+            });
+          }
+
+          document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const dd = btn.closest('.dropdown');
+              document.querySelectorAll('.dropdown').forEach(d => { if (d !== dd) d.classList.remove('open'); });
+              dd.classList.toggle('open');
+            });
+          });
+
+          document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+          });
+        </script>
+    {% endblock %}
+
 </body>
 </html>

@@ -1,0 +1,8 @@
+{% extends "base/basic.html" %}
+{% block title %}Помилка активації{% endblock %}
+
+{% block content %}
+<h1>Помилка активації акаунту</h1>
+<p>Токен недійсний або посилання прострочене.</p>
+<a href="{% url 'register' %}">Спробувати ще раз</a>
+{% endblock %}

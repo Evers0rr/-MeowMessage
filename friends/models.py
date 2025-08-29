@@ -63,7 +63,41 @@ class Friendship(models.Model):
         verbose_name = 'Дружба'
         verbose_name_plural = 'Дружби'
 
+class Subscribers(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='subscribers_relations',
+        on_delete=models.CASCADE)
+    channel = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='channels',
+        on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'channel'],
+                name='unique_subscription'
+            )
+        ]
+        verbose_name = 'Підписник'
+        verbose_name_plural = 'Підписники'
+
+    def __str__(self):
+        return f"{self.user} підписаний на {self.channel}"
     
+    def clean(self):
+        if self.user == self.channel:
+            raise ValidationError("Ви не можете підписатися на себе.")
+        if Subscribers.objects.filter(user=self.user, channel=self.channel).exists():
+            raise ValidationError("Ви вже підписані на цього користувача.")
+        if Subscribers.objects.filter(user=self.channel, channel=self.user).exists():
+            raise ValidationError("Цього користувача вже підписані на вас.")
+        
+        
+    
+
     
     
     

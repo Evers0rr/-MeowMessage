@@ -1,0 +1,17 @@
+<!-- templates/users/alert.html -->
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Повідомлення</title>
+</head>
+<body>
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        alert("{{ message }}"); 
+        window.location.href = "{{ redirect_url }}";
+    });
+</script>
+</body>
+</html>
+

@@ -1,0 +1,78 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Профіль {{ profile_user.username }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile_style.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-container">
+    <div class="profile">
+        <div class="profile-sidebar">
+            <div id="avatar-block">
+                <img id="avatar-img" 
+                src="{{ profile_user.avatar.url }}" 
+                alt="Аватар">
+            </div>
+            <div class="status-block">
+                <strong>Статус:</strong> {{ profile_user.status|default:"Не вказано" }}
+            </div>
+        </div>
+
+        <div class="profile-info">
+            <div class="info-column">
+                <p><strong>Нікнейм:</strong> {{ profile_user.username|default:"Не вказано" }}</p>
+                <p><strong>Ім'я:</strong> {{ profile_user.first_name|default:"Не вказано" }}</p>
+                <p><strong>Прізвище:</strong> {{ profile_user.last_name|default:"Не вказано" }}</p>
+            </div>
+            <div class="info-column">
+                <p><strong>Пошта:</strong> {{ profile_user.email|default:"Не вказано" }}</p>
+                <p><strong>Країна:</strong> {{ profile_user.country|default:"Не вказано" }}</p>
+                <p><strong>Підписники:</strong> {{ subscribers_count|default:"0" }}</p>
+            </div>
+            
+            <div class="bio-block">
+                <h3>БІО</h3>
+                <p>{{ profile_user.bio|default:"Не вказано" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-section">
+        <h3>Групи до яких належить</h3>
+        <ul>
+            {% for group in groups %}
+                <li>{{ group.name }}</li>
+            {% empty %}
+                <li>Немає груп</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="profile-section">
+        <h3>Друзі користувача</h3>
+        <ul>
+            {% for friend in friends %}
+                <li>{{ friend.username }}</li>
+            {% empty %}
+                <li>Немає друзів</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="profile-section">
+        <h3>Останні пости</h3>
+        <ul>
+            {% for post in posts %}
+                <li>{{ post.content }}</li>
+            {% empty %}
+                <li>Немає постів</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

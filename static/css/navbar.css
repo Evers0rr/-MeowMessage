@@ -1,0 +1,132 @@
+:root {
+  --bg:#0b0b0b;
+  --text:#fff;
+  --muted:#cfcfcf;
+  --hover:#1a1a1a;
+  --badge:#ff4d4f;
+}
+
+.navbar {
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:var(--bg);
+  color:var(--text);
+  border-bottom:1px solid #222;
+}
+
+.nav-inner {
+  max-width:1100px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 16px;
+}
+
+.brand {
+  font-weight:700;
+  letter-spacing:.2px;
+  text-decoration:none;
+  color:var(--text);
+}
+
+.brand:hover {
+  opacity:.9;
+}
+
+.spacer { flex:1; }
+
+/* links */
+.nav-links { display:flex; gap:10px; align-items:center; }
+
+.nav-link {
+  color:var(--text);
+  text-decoration:none;
+  padding:8px 10px;
+  border-radius:8px;
+}
+
+.nav-link:hover { background:var(--hover); }
+
+/* search */
+.search {
+  position:relative;
+  flex:0 1 360px;
+}
+
+.search input {
+  width:100%;
+  background:#151515;
+  color:var(--text);
+  border:1px solid #252525;
+  border-radius:10px;
+  padding:9px 12px;
+  outline:none;
+}
+
+.search input::placeholder { color:#8a8a8a; }
+
+/* badge */
+.badge {
+  display:inline-block;
+  min-width:18px;
+  height:18px;
+  line-height:18px;
+  padding:0 6px;
+  border-radius:999px;
+  background:var(--badge);
+  color:#fff;
+  font-size:12px;
+  text-align:center;
+  margin-left:6px;
+}
+
+/* dropdown */
+.dropdown { position:relative; }
+.dropdown-toggle { cursor:pointer; user-select:none; }
+.dropdown-menu {
+  position:absolute;
+  right:0;
+  top:calc(100% + 8px);
+  background:#0f0f0f;
+  border:1px solid #222;
+  border-radius:12px;
+  min-width:220px;
+  padding:6px;
+  display:none;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+}
+.dropdown.open .dropdown-menu { display:block; }
+.dropdown-item {
+  display:block;
+  color:var(--text);
+  text-decoration:none;
+  padding:10px 12px;
+  border-radius:8px;
+}
+.dropdown-item:hover { background:var(--hover); }
+.dropdown-sep { height:1px; background:#1f1f1f; margin:6px 0; }
+
+/* responsive */
+.mobile-toggle { display:none; cursor:pointer; padding:8px 10px; border-radius:8px; }
+.mobile-toggle:hover { background:var(--hover); }
+
+@media (max-width:900px) {
+  .search { flex:1 1 auto; }
+}
+
+@media (max-width:720px) {
+  .nav-links { display:none; }
+  .nav-links.mobile-open {
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:4px;
+    background:#0d0d0d;
+    padding:8px;
+    border-top:1px solid #222;
+  }
+  .mobile-toggle { display:block; margin-left:auto; }
+  .spacer { display:none; }
+}

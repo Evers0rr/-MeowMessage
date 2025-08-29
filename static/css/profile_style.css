@@ -1,0 +1,154 @@
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.profile {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 30px;
+    padding: 25px;
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#avatar-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.status-block {
+    padding: 10px 15px;
+    background: #e8f5e9;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2e7d32;
+    margin-top: 10px;
+}
+
+.profile-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.info-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profile-info p {
+    margin: 0;
+    padding: 8px 0;
+    font-size: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-info strong {
+    color: #555;
+    min-width: 120px;
+    display: inline-block;
+}
+
+.bio-block {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+}
+
+.bio-block h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 18px;
+}
+
+.bio-block p {
+    margin: 0;
+    line-height: 1.6;
+    color: #666;
+}
+
+.profile-section {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.profile-section h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 20px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.profile-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.profile-section li {
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #007bff;
+    transition: background-color 0.2s;
+}
+
+.profile-section li:hover {
+    background: #e9ecef;
+}
+
+@media (max-width: 768px) {
+    .profile {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .profile-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-sidebar {
+        order: -1;
+    }
+    
+    .profile-info strong {
+        min-width: 100px;
+    }
+    
+    .profile-container {
+        padding: 15px;
+    }
+    
+    .profile, .profile-section {
+        padding: 20px;
+    }
+}

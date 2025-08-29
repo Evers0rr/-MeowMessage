@@ -1,0 +1,258 @@
+/* Основной контейнер */
+.home-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.home-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 32px;
+  font-weight: 600;
+  color: #222;
+}
+
+/* Сетка главной страницы */
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 350px;
+  gap: 25px;
+  align-items: start;
+}
+
+.home-column {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.home-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Карточки секций */
+.section-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.section-title {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #222;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #3498db;
+}
+
+/* Карточки постов */
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.post-card {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid #3498db;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.post-author {
+  font-weight: 600;
+  color: #3498db;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.post-author:hover {
+  text-decoration: underline;
+}
+
+.post-time {
+  font-size: 12px;
+  color: #666;
+}
+
+.post-content {
+  margin: 0;
+  line-height: 1.5;
+  color: #333;
+}
+
+/* Боковая панель */
+.sidebar-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.sidebar-title {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e74c3c;
+}
+
+.sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.sidebar-item:hover {
+  background: #e9ecef;
+}
+
+.item-title {
+  font-weight: 500;
+  color: #333;
+  text-decoration: none;
+}
+
+.item-title:hover {
+  color: #3498db;
+}
+
+.item-meta {
+  font-size: 12px;
+  color: #666;
+  background: #e0e0e0;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+/* Сообщения о пустом списке */
+.empty-message {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 0;
+}
+
+/* Пагинация */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.pagination-btn {
+  padding: 10px 20px;
+  background: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.pagination-btn:hover {
+  background: #2980b9;
+}
+
+.pagination-info {
+  color: #666;
+  font-weight: 500;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+  .home-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .home-sidebar {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .home-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    padding: 15px;
+  }
+  
+  .section-card,
+  .sidebar-card {
+    padding: 20px;
+  }
+  
+  .home-title {
+    font-size: 28px;
+  }
+  
+  .post-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-container {
+    padding: 10px;
+  }
+  
+  .section-card,
+  .sidebar-card {
+    padding: 15px;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
