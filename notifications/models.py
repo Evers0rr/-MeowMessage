@@ -27,6 +27,7 @@ class Notification(models.Model):
     feedback = models.ForeignKey(Feedback, on_delete=models.CASCADE, related_name='notifications', blank=True, null=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    message = models.TextField(null=True, blank=True)
 
     def clean(self):
         if self.notification_type == 'comment' and not self.comment:

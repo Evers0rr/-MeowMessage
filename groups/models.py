@@ -195,9 +195,6 @@ class GroupInvitation(models.Model):
     def save(self, *args, **kwargs):
         if not self.expires_at:
             self.expires_at = timezone.now() + timedelta(hours=24)
-
-        #|----------------------------------------------------------|
-
         if self.group.join_requests.filter(user=self.invitee, status='pending').exists():
             raise ValidationError("Цей користувач вже має запит на приєднання до групи.")
         if self.group.members.filter(id=self.invitee.id).exists():

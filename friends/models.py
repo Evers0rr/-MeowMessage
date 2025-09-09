@@ -92,8 +92,7 @@ class Subscribers(models.Model):
             raise ValidationError("Ви не можете підписатися на себе.")
         if Subscribers.objects.filter(user=self.user, channel=self.channel).exists():
             raise ValidationError("Ви вже підписані на цього користувача.")
-        if Subscribers.objects.filter(user=self.channel, channel=self.user).exists():
-            raise ValidationError("Цього користувача вже підписані на вас.")
+
         
         
     

@@ -19,8 +19,11 @@
           {% for post in friends_posts %}
             <div class="post-card">
               <div class="post-header">
-                <a href="{% url 'profile' username=post.author.username %}" class="post-author">
-                  {{ post.author.username }}
+                <a href="{% url 'profile' username=post.author.username %}" class="post-author-link">
+                  <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" 
+                       alt="{{ post.author.username }}" 
+                       class="post-author-avatar">
+                  <span class="post-author-name">{{ post.author.username }}</span>
                 </a>
                 <span class="post-time">{{ post.created_at|timesince }} тому</span>
               </div>
@@ -35,13 +38,16 @@
 
     <div class="home-column">
       <div class="section-card">
-        <h2 class="section-title">Останні пости спільного у яких ви знаходитесь</h2>
+        <h2 class="section-title">Останні пости спільнот у яких ви знаходитесь</h2>
         <div class="posts-list">
           {% for post in group_posts %}
             <div class="post-card">
               <div class="post-header">
-                <a href="{% url 'profile' username=post.author.username %}" class="post-author">
-                  {{ post.author.username }}
+                <a href="{% url 'profile' username=post.author.username %}" class="post-author-link">
+                  <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" 
+                       alt="{{ post.author.username }}" 
+                       class="post-author-avatar">
+                  <span class="post-author-name">{{ post.author.username }}</span>
                 </a>
                 <span class="post-time">{{ post.created_at|timesince }} тому</span>
               </div>
@@ -55,7 +61,7 @@
     </div>
 
     <div class="home-sidebar">
-     <div class="sidebar-card">
+      <div class="sidebar-card">
         <h3 class="sidebar-title">Найпопулярніші події</h3>
         <div class="sidebar-list">
           {% for event in popular_events %}
@@ -76,7 +82,6 @@
             <div class="sidebar-item">
               <span class="item-title">{{ community.name }}</span>
               <span class="item-meta">{{ community.members_count }} учасників</span>
-
             </div>
           {% empty %}
             <p class="empty-message">Спільнот поки що немає</p>
@@ -89,10 +94,13 @@
         <div class="sidebar-list">
           {% for user in popular_users %}
             <div class="sidebar-item">
-              <a href="{% url 'profile' username=user.username %}" class="item-title">
-                {{ user.username }}
+              <a href="{% url 'profile' username=user.username %}" class="popular-user-link">
+                <img src="{{ user.avatar.url|default:'/media/avatars/default.jpg' }}" 
+                     alt="{{ user.username }}" 
+                     class="popular-user-avatar">
+                <span class="popular-username">{{ user.username }}</span>
               </a>
-              <span class="item-meta">{{ user.followers_count }} підписників</span>
+              <span class="item-meta">{{ user.subscribers_count }} підписників</span>
             </div>
           {% empty %}
             <p class="empty-message">Користувачів поки що немає</p>

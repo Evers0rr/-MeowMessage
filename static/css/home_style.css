@@ -130,6 +130,7 @@
   background: #f8f9fa;
   border-radius: 8px;
   transition: background 0.2s;
+  gap: 10px;
 }
 
 .sidebar-item:hover {
@@ -152,6 +153,36 @@
   background: #e0e0e0;
   padding: 4px 8px;
   border-radius: 12px;
+  flex-shrink: 0;
+}
+
+/* Стили для популярных пользователей с аватарками */
+.popular-user-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.2s;
+  flex-grow: 1;
+}
+
+.popular-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #000;
+  flex-shrink: 0;
+}
+
+.popular-user-link:hover {
+  color: #3498db;
+}
+
+.popular-user-link:hover .popular-username {
+  text-decoration: underline;
 }
 
 /* Сообщения о пустом списке */
@@ -239,6 +270,11 @@
     align-items: flex-start;
     gap: 5px;
   }
+  
+  .popular-user-avatar {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -255,4 +291,83 @@
     flex-direction: column;
     gap: 10px;
   }
+  
+  .popular-user-avatar {
+    width: 24px;
+    height: 24px;
+    border-width: 1px;
+  }
+  
+  .popular-user-link {
+    gap: 8px;
+  }
+  
+  .sidebar-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .item-meta {
+    align-self: flex-end;
+  }
+}
+
+/* Стили для авторов постов с аватарками */
+.post-author-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.post-author-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #000;
+    flex-shrink: 0;
+}
+
+.post-author-name {
+    font-weight: 600;
+    color: #3498db;
+}
+
+.post-author-link:hover .post-author-name {
+    text-decoration: underline;
+}
+
+/* Адаптивность для аватарок в постах */
+@media (max-width: 768px) {
+    .post-author-avatar {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .post-author-avatar {
+        width: 24px;
+        height: 24px;
+        border-width: 1px;
+    }
+    
+    .post-author-link {
+        gap: 8px;
+    }
+    
+    .post-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .post-time {
+        align-self: flex-end;
+    }
 }

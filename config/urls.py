@@ -26,6 +26,8 @@ urlpatterns = [
     path('', PostListView.as_view(), name='post-list'),
     path('posts/', include('posts.urls')),
     path('users/', include('users.urls')),
+    path('friends/', include('friends.urls')),
+     path('notifications/', include(('notifications.urls', 'notifications'), namespace='notifications')),
 ]
 
 if settings.DEBUG:

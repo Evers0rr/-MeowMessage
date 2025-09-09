@@ -84,7 +84,7 @@ class ProfileSettingsForm(forms.ModelForm):
     birthday = forms.DateField(
         label="Дата народження",
         required=False,
-        input_formats=['%Y-%m-%d'],
+        input_formats=['%d-%m-%Y'],
         widget=forms.DateInput(attrs={'type': 'date'})
     )
     new_email = forms.EmailField(

@@ -1,0 +1,51 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Сповіщення{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/notification.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="notifications-container">
+    <h1>Сповіщення</h1>
+
+    <div class="notifications-list">
+        {% for notification in notifications %}
+        <div class="notification-item {% if not notification.is_read %}unread{% else %}read{% endif %}"
+             data-id="{{ notification.id }}"
+             data-mark-url="{% url 'notifications:mark_read' notification.id %}">
+            <div class="notification-header">
+                <img src="{{ notification.sender.avatar.url|default:'/media/avatars/default.jpg' }}"
+                     alt="{{ notification.sender.username }}"
+                     class="notification-avatar">
+                <div class="notification-info">
+                    <p class="notification-message">{{ notification.get_message }}</p>
+                    <small class="notification-time">{{ notification.created_at|timesince }} тому</small>
+                </div>
+            </div>
+
+            {% if notification.notification_type == 'friend_request' %}
+            <div class="notification-actions">
+                <form class="action-form notify-action" method="post"
+                      action="{% url 'friends:friend_request_action' notification.friend_request.id 'accept' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Прийняти</button>
+                </form>
+                <form class="action-form notify-action" method="post"
+                      action="{% url 'friends:friend_request_action' notification.friend_request.id 'reject' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Відхилити</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="no-notifications">Немає сповіщень</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="{% static 'notifications/js/notifications.js' %}" defer></script>
+{% endblock %}

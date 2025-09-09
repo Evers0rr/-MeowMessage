@@ -13,12 +13,13 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.views.generic import DetailView
 from django.db.models import Q
+from django.utils import timezone
 
 from .forms import CustomUserCreationForm, ProfileSettingsForm
 from .models import User
 from posts.models import Post
 from groups.models import Group
-from friends.models import Friendship, Subscribers
+from friends.models import Friendship, Subscribers, Friendrequest, Friendship
 
 ALERT_TEMPLATE = 'base/alert.html'
 EMAIL_CONFIRM_TEMPLATE = 'users/email_confirm.html'
@@ -133,14 +134,66 @@ class ProfileView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.get_object()
+
         context['posts'] = Post.objects.filter(author=user).order_by('-created_at')
-        context['friends'] = [fs.user2 if fs.user1 == user else fs.user1 
-                              for fs in Friendship.objects.filter(Q(user1=user) | Q(user2=user))]
-        context['subscribers'] = Subscribers.objects.filter(channel=user)
-        context['subscribers_count'] = context['subscribers'].count()
+
+        friendships = Friendship.objects.filter(Q(user1=user) | Q(user2=user))
+        context['friends'] = [fs.user2 if fs.user1 == user else fs.user1 for fs in friendships]
+        context['friends_count'] = friendships.count()
+
+        context['subscribers_count'] = Subscribers.objects.filter(channel=user).count()
+        context['subscriptions_count'] = Subscribers.objects.filter(user=user).count()
+
         context['is_own_profile'] = self.request.user == user
 
+        if not context['is_own_profile']:
+            context['is_subscribed'] = Subscribers.objects.filter(
+                user=self.request.user,
+                channel=user
+            ).exists()
+
+            context['is_friend'] = Friendship.objects.filter(
+                Q(user1=self.request.user, user2=user) |
+                Q(user1=user, user2=self.request.user)
+            ).exists()
+
+            sent_request = Friendrequest.objects.filter(
+                sender=self.request.user,
+                receiver=user,
+                accepted=False
+            ).first()
+
+            received_request = Friendrequest.objects.filter(
+                sender=user,
+                receiver=self.request.user,
+                accepted=False
+            ).first()
+
+            context['friend_request_sent'] = bool(sent_request)
+            context['friend_request_received'] = bool(received_request)
+
+            if sent_request:
+                context['sent_request_id'] = sent_request.id
+            if received_request:
+                context['received_request_id'] = received_request.id
+
+            if context['is_friend']:
+                context['friend_status'] = 'remove'
+            elif context['friend_request_sent']:
+                context['friend_status'] = 'pending'
+            else:
+                context['friend_status'] = 'add'
+
+        else:
+            context['is_subscribed'] = False
+            context['is_friend'] = False
+            context['friend_request_sent'] = False
+            context['friend_request_received'] = False
+            context['friend_status'] = 'add'
+
         return context
+
+
 
 class SettingsView(LoginRequiredMixin, View):
 
@@ -156,6 +209,7 @@ class SettingsView(LoginRequiredMixin, View):
             new_email = form.cleaned_data.get('new_email')
             if new_email and new_email != user.email:
                 user.new_email = new_email
+                user.new_email_at = timezone.now()
                 user.save(update_fields=['new_email'])
 
                 uid = urlsafe_base64_encode(force_bytes(user.pk))

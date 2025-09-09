@@ -13,13 +13,37 @@
     <div class="profile">
         <div class="profile-sidebar">
             <div id="avatar-block">
-                <img id="avatar-img" 
-                src="{{ profile_user.avatar.url }}" 
-                alt="Аватар">
+                <img id="avatar-img" src="{{ profile_user.avatar.url|default:'/media/avatars/default.jpg' }}" alt="Аватар">
             </div>
             <div class="status-block">
                 <strong>Статус:</strong> {{ profile_user.status|default:"Не вказано" }}
             </div>
+
+            {% if not is_own_profile and user.is_authenticated %}
+            <div class="action-buttons">
+                <form method="post" action="{% url 'friends:toggle_subscribe' profile_user.username %}" class="action-form subscribe-form">
+                    {% csrf_token %}
+                    <button type="submit" class="action-btn subscribe-btn {% if is_subscribed %}subscribed{% endif %}">
+                        {% if is_subscribed %}Відписатися{% else %}Підписатися{% endif %}
+                    </button>
+                </form>
+                <form method="post" 
+                      action="{% if is_friend %}{% url 'friends:remove_friend' profile_user.username %}{% else %}{% url 'friends:friend_request' profile_user.username %}{% endif %}" 
+                      class="action-form friend-form">
+                    {% csrf_token %}
+                    <button type="submit" class="action-btn friend-btn {% if is_friend %}friend{% endif %}">
+                        {% if is_friend %}Видалити з друзів{% else %}Додати в друзі{% endif %}
+                    </button>
+                </form>
+                <div class="profile-stats">
+                    <span>{{ subscribers_count }} підписників</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="profile-stats">
+                    <span>{{ subscribers_count }} підписників</span>
+            </div>
+            {% endif %}
         </div>
 
         <div class="profile-info">
@@ -31,7 +55,7 @@
             <div class="info-column">
                 <p><strong>Пошта:</strong> {{ profile_user.email|default:"Не вказано" }}</p>
                 <p><strong>Країна:</strong> {{ profile_user.country|default:"Не вказано" }}</p>
-                <p><strong>Підписники:</strong> {{ subscribers_count|default:"0" }}</p>
+                <p><strong>Статус конфіденційності:</strong> {{ profile_user.get_privacy_status_display }}</p>
             </div>
             
             <div class="bio-block">
@@ -45,7 +69,7 @@
         <h3>Групи до яких належить</h3>
         <ul>
             {% for group in groups %}
-                <li>{{ group.name }}</li>
+                <li><a href="{% url 'group_detail' group.id %}" class="group-link">{{ group.name }}</a></li>
             {% empty %}
                 <li>Немає груп</li>
             {% endfor %}
@@ -53,10 +77,15 @@
     </div>
 
     <div class="profile-section">
-        <h3>Друзі користувача</h3>
-        <ul>
+        <h3>Друзі користувача ({{ friends_count }})</h3>
+        <ul class="users-list">
             {% for friend in friends %}
-                <li>{{ friend.username }}</li>
+                <li class="user-item">
+                    <a href="{% url 'profile' username=friend.username %}" class="user-link">
+                        <img src="{{ friend.avatar.url|default:'/media/avatars/default.jpg' }}" alt="{{ friend.username }}" class="user-avatar">
+                        <span class="username">{{ friend.username }}</span>
+                    </a>
+                </li>
             {% empty %}
                 <li>Немає друзів</li>
             {% endfor %}
@@ -65,9 +94,18 @@
 
     <div class="profile-section">
         <h3>Останні пости</h3>
-        <ul>
+        <ul class="posts-list">
             {% for post in posts %}
-                <li>{{ post.content }}</li>
+                <li class="post-item">
+                    <div class="post-header">
+                        <a href="{% url 'profile' username=post.author.username %}" class="user-link">
+                            <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" alt="{{ post.author.username }}" class="user-avatar">
+                            <span class="username">{{ post.author.username }}</span>
+                        </a>
+                        <span class="post-time">{{ post.created_at|timesince }} тому</span>
+                    </div>
+                    <p class="post-content">{{ post.content }}</p>
+                </li>
             {% empty %}
                 <li>Немає постів</li>
             {% endfor %}
@@ -75,4 +113,5 @@
     </div>
 </div>
 
+<script src="{% static 'users/js/profile-actions.js' %}" defer></script>
 {% endblock %}

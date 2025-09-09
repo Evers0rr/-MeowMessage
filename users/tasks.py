@@ -11,8 +11,12 @@ def delete_inactive_users():
     users.delete()
     return f"Видалено {count} неактивних користувачів"
 
+
 @shared_task
 def reset_new_email():
     threshold = timezone.now() - timedelta(minutes=10)
-    count = User.objects.filter(new_email__isnull=False, last_login__lt=threshold).update(new_email=None)
+    count = User.objects.filter(
+        new_email__isnull=False,
+        new_email_at__lt=threshold
+    ).update(new_email=None, new_email_at=None)
     return f'Скинуто {count} нових email'
