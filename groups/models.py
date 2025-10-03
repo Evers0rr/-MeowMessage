@@ -21,11 +21,6 @@ STATUS_CHOICES = [
     ("declined", "Відхилено"),
 ]
 
-GROUP_PUBLIC_OR_PRIVATE = [
-    ('public', 'Публічна'),
-    ('private', 'Приватна'),
-]
-
 
 class GroupCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -42,12 +37,16 @@ class GroupCategory(models.Model):
         ordering = ['name']
 
 class Group(models.Model):
+    GROUP_PUBLIC_OR_PRIVATE = [
+    ('public', 'Публічна'),
+    ('private', 'Приватна'),
+]
     name = models.CharField(max_length=100, unique=True)
     description = models.CharField(blank=True, max_length=255)
     category = models.ForeignKey(GroupCategory, on_delete=models.CASCADE, related_name='groups', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    avatar = models.ImageField(upload_to='group_avatars/', blank=True, null=True)
+    avatar = models.ImageField(upload_to='group_avatars/',default='group_avatars/default_group.png', blank=True, null=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members', blank=True)
     public_or_private = models.CharField(max_length=10, choices=GROUP_PUBLIC_OR_PRIVATE, default='public')
 
@@ -57,8 +56,8 @@ class Group(models.Model):
             raise ValidationError("Назва групи не може бути порожньою.")
         if not self.category:
             raise ValidationError("Будь ласка, виберіть категорію для групи.")
-        if self.avatar and not self.avatar.name.endswith(('.png', '.jpg', '.jpeg', '.gif')):
-            raise ValidationError("Непідтримуваний формат зображення. Використовуйте .png, .jpg, .jpeg або .gif.")
+        if self.avatar and not self.avatar.name.endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+            raise ValidationError("Непідтримуваний формат зображення. Використовуйте .png, .jpg, .jpeg, .webp або .gif.")
 
     class Meta:
         verbose_name = 'Група'
@@ -70,7 +69,7 @@ class Group(models.Model):
         super().save(*args, **kwargs)
 
         if is_new and owner:
-            Membership = apps.get_model("your_app_name", "Membership")
+            Membership = apps.get_model("groups", "Membership")
             Membership.objects.create(group=self, user=owner, role="owner")
         
 
@@ -103,6 +102,7 @@ class MemberShip(models.Model):
 class GroupPost(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='posts')
     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE, related_name='group_posts')
+    title = models.CharField(max_length=80)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -117,27 +117,38 @@ class GroupPost(models.Model):
         ordering = ['-created_at']
 
     def clean(self):
-        membership = self.group.memberships.filter(user=self.author).first()
-
-        if not membership or membership.role not in ["moderator", "admin", "owner"]:
-            raise ValidationError("Тільки модератори або вище можуть створювати пости.")
-
+        if not self.group:
+            return
+       
+        if not self.title.strip():
+            raise ValidationError("Назва посту не може бути порожньою.")
         if not self.content.strip() and not self.image:
             raise ValidationError("Контент посту не може бути порожнім.")
-        if self.image and not self.image.name.endswith(('.png', '.jpg', '.jpeg', '.gif')):
-            raise ValidationError("Непідтримуваний формат зображення. Використовуйте .png, .jpg, .jpeg або .gif.")
+        if self.image and not self.image.name.endswith(('.png', '.jpg', '.jpeg', '.gif', 'webp')):
+            raise ValidationError("Непідтримуваний формат зображення. Використовуйте .png, .jpg, .jpeg, .webp або .gif.")
         if self.author not in self.group.members.all():
             raise ValidationError("Автор посту повинен бути учасником групи.")
+        
+    def get_comments_count(self):
+        return self.comments.count()
+    
+    def get_likes_count(self):
+        return self.group_likes.filter(like_type='like').count()
+    
+    def get_dislikes_count(self):
+        return self.group_likes.filter(like_type='dislike').count()
         
 class GroupComment(models.Model):
     post = models.ForeignKey(GroupPost, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='group_comments')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
     content = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return f"Коментар від {self.author.username} до посту {self.post.id} в групі {self.post.group.name} | Дата створення: {self.created_at}"
+    
     
     class Meta:
         verbose_name = 'Коментар групи'
@@ -148,7 +159,10 @@ class GroupComment(models.Model):
         if not self.content.strip():
             raise ValidationError("Контент коментаря не може бути порожнім.")
         if len(self.content) > 500:
-            raise ValidationError("Контент коментаря не може перевищувати 255 символів.")
+            raise ValidationError("Контент коментаря не може перевищувати 500 символів.")
+        
+        if self.post_id and self.parent and self.parent.post_id != self.post_id:
+            raise ValidationError("Parent-коментар повинен належати тому ж посту.")
 
 class GroupJoinRequest(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='join_requests')
@@ -208,7 +222,19 @@ class GroupInvitation(models.Model):
     def accept_invitation(self):
         if self.status != 'pending':
             raise ValidationError("Запрошення вже неактивне.")
+
         self.group.members.add(self.invitee)
+
+        Membership = apps.get_model("groups", "MemberShip")
+        membership, created = Membership.objects.get_or_create(
+            user=self.invitee,
+            group=self.group,
+            defaults={"role": "member"}
+        )
+        if not created:
+            membership.role = "member"
+            membership.save()
+
         self.status = 'accepted'
         self.save()
 
@@ -216,15 +242,29 @@ class GroupInvitation(models.Model):
         if self.status != 'pending':
             raise ValidationError("Запрошення вже неактивне.")
         
-            
-        
-
-        
-
-
-
-        
+class GroupLike(models.Model):
+    like_type_choices = [
+        ('like', '👍'),
+        ('dislike', '👎'),
+    ]  
+    like_type = models.CharField(
+        max_length=10,
+        choices=like_type_choices,
+        verbose_name='Тип лайку'
+    )
+    post = models.ForeignKey(GroupPost, on_delete=models.CASCADE, related_name='group_likes')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='group_likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+       
+    def __str__(self):
+        return f"Лайк від {self.user.username} до групового посту {self.post.id} ({self.created_at.strftime('%Y-%m-%d %H:%M')})"
     
-
-
-
+    class Meta:
+        verbose_name = 'Лайк'
+        verbose_name_plural = 'Лайки'
+        constraints = [
+            models.UniqueConstraint(fields=['post', 'user'], name='unique_user_group_reaction_per_post')
+        ]
+        ordering = ['-created_at']
+    

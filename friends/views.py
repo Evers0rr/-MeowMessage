@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View
+from django.views.generic import View, ListView, DetailView
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.db import IntegrityError
@@ -8,6 +8,36 @@ from django.db.models import Q
 from users.models import User
 from .models import Subscribers, Friendship, Friendrequest
 from notifications.models import Notification
+
+class FriendsListView(LoginRequiredMixin, ListView):
+    model = Friendship
+    template_name = 'friends/friends_list.html'
+    context_object_name = 'friendships'
+    paginate_by = 5
+
+    def get_queryset(self):
+        return Friendship.objects.filter(
+            Q(user1=self.request.user) | Q(user2=self.request.user)
+        ).select_related('user1', 'user2').order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        friendships = self.get_queryset()
+        friends = []
+        for friendship in friendships:
+            friend = friendship.user2 if friendship.user1 == self.request.user else friendship.user1
+            friends.append({
+                'user': friend,
+                'friendship': friendship,
+                'friends_since': friendship.created_at
+            })
+        
+        context['friends'] = friends
+        context['friends_count'] = len(friends)
+        
+        return context
+
 
 class SubscribeToggleView(LoginRequiredMixin, View):
     def post(self, request, username):

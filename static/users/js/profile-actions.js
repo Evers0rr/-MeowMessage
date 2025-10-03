@@ -84,3 +84,49 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    function adjustCoverSize() {
+        const cover = document.querySelector('.profile-cover');
+        if (!cover) return;
+
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        
+        if (screenWidth >= 1920) {
+            cover.style.height = '45vh';
+            cover.style.minHeight = '400px';
+        } 
+        else if (screenWidth >= 1200) {
+            cover.style.height = '40vh';
+            cover.style.minHeight = '350px';
+        }
+        else if (screenWidth >= 768) {
+            cover.style.height = '35vh';
+            cover.style.minHeight = '300px';
+        }
+        else {
+            cover.style.height = '30vh';
+            cover.style.minHeight = '250px';
+            cover.style.maxHeight = '300px';
+        }
+
+        if (screenWidth / screenHeight > 2) {
+            cover.style.height = '35vh';
+        }
+    }
+
+    adjustCoverSize();
+    window.addEventListener('resize', adjustCoverSize);
+    window.addEventListener('orientationchange', adjustCoverSize);
+
+    let coverImage = document.querySelector('.profile-cover');
+    if (coverImage && coverImage.style.backgroundImage) {
+        const img = new Image();
+        img.src = coverImage.style.backgroundImage.replace(/url\(['"]?(.*?)['"]?\)/i, '$1');
+        img.onload = function() {
+            coverImage.style.backgroundSize = 'cover';
+            coverImage.style.backgroundPosition = 'center center';
+        };
+    }
+});

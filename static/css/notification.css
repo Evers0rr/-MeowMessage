@@ -112,7 +112,6 @@
     font-style: italic;
 }
 
-/* toast container styling */
 #page-toast-container {
     position: fixed;
     top: 20px;
@@ -120,7 +119,6 @@
     z-index: 12000;
 }
 
-/* small screens */
 @media (max-width: 780px) {
     .notification-avatar {
         width: 56px;
@@ -133,3 +131,44 @@
         padding: 0 14px;
     }
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    padding: 8px 16px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.pagination-btn:hover {
+    background: #0056b3;
+}
+
+.pagination-info {
+    color: #666;
+    font-weight: 500;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.settings-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+

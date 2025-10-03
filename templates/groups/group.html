@@ -1,0 +1,166 @@
+{% extends "base/basic.html" %}
+{% block title %}Активність групи {{ group.name }}{% endblock %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/group.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="activity-container">
+    <h1>📈 Активність групи</h1>
+    <div class="group-info">
+        <strong>{{ group.name }}</strong> • {{ group.members.count }} учасників
+    </div>
+
+    <div class="activity-buttons">
+        <a href="{% url 'groups:group-posts' group.id %}" class="btn">📋 Всі пости</a>
+        <a href="{% url 'groups:create-group-post' group.id %}" class="btn">✍️ Створити пост</a>
+        {% if group.public_or_private == 'public' %}
+            <a href="{% url 'groups:group-invite' group.pk %}" class="btn btn-success">Запросити користувача</a>
+        {% endif %}
+    </div>
+
+
+    <div class="section-divider"></div>
+
+    <h2>🔥 Остання активність</h2>
+    
+    <div class="posts-grid">
+        {% for post in posts %}
+            <div class="post-card">
+                <div class="activity-status {% if forloop.first %}recent{% endif %}"></div>
+                
+                <div class="post-header">
+                    <div class="post-title">
+                        <a href="{% url 'groups:group-post-detail' group.pk post.pk %}">
+                            {{ post.title }}
+                        </a>
+                    </div>
+                    <div class="post-meta">
+                        {{ post.created_at|date:"d.m.Y H:i" }}
+                    </div>
+                </div>
+
+                <div class="post-author">
+                    <a href="{% url 'profile' username=post.author.username %}" class="author-link">
+                        <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" 
+                             alt="{{ post.author.username }}" 
+                             class="author-avatar"
+                             onerror="this.src='/media/avatars/default.jpg'">
+                        <span class="author-name">{{ post.author.username }}</span>
+                    </a>
+                </div>
+
+                {% if post.image %}
+                <div class="post-image">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" 
+                         onerror="this.style.display='none'">
+                </div>
+                {% endif %}
+
+                <div class="post-content">
+                    {{ post.content|truncatechars:150 }}
+                </div>
+
+                <div class="comments-section">
+                    <div class="comments-header">
+                        <div class="comments-title">
+                            💬 Коментарі 
+                            <span class="comments-count">{{ post.comments.count }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="comments-list">
+                        {% for comment in post.comments.all|slice:":3" %}
+                            <div class="comment-item">
+                                <div class="comment-author">
+                                    <a href="{% url 'profile' username=comment.author.username %}" 
+                                       class="author-link"
+                                       style="text-decoration: none; color: inherit;">
+                                        <img src="{{ comment.author.avatar.url|default:'/media/avatars/default.jpg' }}" 
+                                             alt="{{ comment.author.username }}" 
+                                             class="comment-avatar"
+                                             onerror="this.src='/media/avatars/default.jpg'">
+                                        <span class="comment-author-name">{{ comment.author.username }}</span>
+                                    </a>
+                                </div>
+                                <p class="comment-content">
+                                    {{ comment.content|truncatechars:80 }}
+                                </p>
+                                <div class="comment-meta">
+                                    {{ comment.created_at|date:"d.m.Y H:i" }}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-comments">
+                                Ще немає коментарів
+                            </div>
+                        {% endfor %}
+                        
+                        {% if post.comments.count > 3 %}
+                        <div class="more-comments">
+                            <span>+{{ post.comments.count|add:"-3" }} ще</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty-state">
+                📝 Поки що немає активності в цій групі
+                <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                    Створіть перший пост, щоб розпочати обговорення!
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Простой JavaScript для интерактивности -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Плавная прокрутка для комментариев
+    const commentLists = document.querySelectorAll('.comments-list');
+    commentLists.forEach(list => {
+        if (list.scrollHeight > list.clientHeight) {
+            list.style.cursor = 'grab';
+            
+            let isScrolling = false;
+            let startY, scrollTop;
+            
+            list.addEventListener('mousedown', function(e) {
+                isScrolling = true;
+                startY = e.pageY - list.offsetTop;
+                scrollTop = list.scrollTop;
+                list.style.cursor = 'grabbing';
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isScrolling = false;
+                list.style.cursor = 'grab';
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isScrolling) return;
+                e.preventDefault();
+                const y = e.pageY - list.offsetTop;
+                const walk = (y - startY) * 2;
+                list.scrollTop = scrollTop - walk;
+            });
+        }
+    });
+    
+    const cards = document.querySelectorAll('.post-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

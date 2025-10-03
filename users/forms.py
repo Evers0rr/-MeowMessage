@@ -37,7 +37,7 @@ class CustomUserCreationForm(UserCreationForm):
         required=True,
         widget=forms.PasswordInput(attrs={'placeholder': 'Повторіть пароль'})
     )
-
+    
 
 
     class Meta:
@@ -101,11 +101,21 @@ class ProfileSettingsForm(forms.ModelForm):
         required=False,
         widget=forms.Select(attrs={'class': 'form-select'})
     )
+    cover_image = forms.ImageField(
+        label="Фото-обкладинка",
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'cover-input',
+            'accept': 'image/*'
+        })
+    )
+
+    
 
     class Meta:
         model = User
         fields = [
-            'avatar', 'first_name', 'last_name', 'current_email', 'new_email',
+            'avatar','cover_image', 'first_name', 'last_name', 'current_email', 'new_email',
             'status', 'bio', 'birthday', 'country'
         ]
 
@@ -121,3 +131,4 @@ class ProfileSettingsForm(forms.ModelForm):
         if new_email and User.objects.filter(email=new_email).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError("Користувач з такою поштою вже існує.")
         return new_email
+    

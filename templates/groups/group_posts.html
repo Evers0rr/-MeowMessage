@@ -1,0 +1,142 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Пости групи: {{ group.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/group_posts.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="posts-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">📝 Пости групи</h1>
+            <div class="page-subtitle">{{ group.name }} • {{ posts.paginator.count }} постів</div>
+        </div>
+        <a href="{% url 'groups:create-group-post' group.pk %}" class="create-post-btn">
+            ✨ Створити пост
+        </a>
+    </div>
+
+    <div class="posts-grid">
+        {% if posts %}
+            {% for post in posts %}
+            <div class="post-card">
+                {% if forloop.first and post.is_recent %}
+                <div class="new-post-indicator" title="Новий пост"></div>
+                {% endif %}
+
+                <div class="post-title">
+                    <a href="{% url 'groups:group-post-detail' group.pk post.pk %}">
+                        {{ post.title }}
+                    </a>
+                </div>
+
+                <div class="post-author">
+                    <a href="{% url 'profile' username=post.author.username %}" class="author-link">
+                        <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" 
+                             alt="{{ post.author.username }}" 
+                             class="author-avatar"
+                             onerror="this.src='/media/avatars/default.jpg'">
+                        <div class="author-info">
+                            <span class="author-name">{{ post.author.username }}</span>
+                            <span class="post-date">{{ post.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                    </a>
+                </div>
+
+                {% if post.image %}
+                <div class="post-image-container">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image"
+                         onerror="this.style.display='none'">
+                </div>
+                {% endif %}
+
+                {% if post.content %}
+                <div class="post-content">
+                    {{ post.content|truncatewords:30 }}
+                </div>
+                {% endif %}
+
+                <div class="post-stats">
+                    <div class="stat-item stat-comments">
+                        {{ post.comments.count }} коментарів
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <p>📭 Поки що немає постів у цій групі</p>
+                <p style="font-size: 0.9em; color: #888; margin-top: 10px;">
+                    Створіть перший пост, щоб розпочати обговорення!
+                </p>
+                <a href="{% url 'groups:create-group-post' group.pk %}" class="create-post-btn" style="margin-top: 20px;">
+                    ✨ Створити перший пост
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if is_paginated %}
+    <div class="pagination">
+        <span class="pagination-info">
+            Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}
+        </span>
+        
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">← Попередня</a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="current">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Наступна →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.post-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    cards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

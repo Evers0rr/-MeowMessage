@@ -1,0 +1,73 @@
+{% extends "base/basic.html" %}
+{% block title %}Групи{% endblock %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/group_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1>Список Груп</h1>
+
+<form method="get" class="d-flex gap-2 align-items-center mb-3">
+  <div class="input-group">
+    <span class="input-group-text"><i class="bi bi-tags"></i></span>
+    <select name="category" id="category" onchange="this.form.submit()" class="form-select">
+      <option value="">Всі категорії</option>
+      {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+              {{ cat.name }}
+          </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="input-group">
+    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+    <select name="privacy" id="privacy" onchange="this.form.submit()" class="form-select">
+      <option value="">Всі</option>
+      <option value="public" {% if selected_privacy == "public" %}selected{% endif %}>🌐 Публічні</option>
+      <option value="private" {% if selected_privacy == "private" %}selected{% endif %}>🔒 Приватні</option>
+    </select>
+  </div>
+</form>
+
+
+<div class="groups-list">
+    {% for group in groups %}
+    <div class="group-card">
+        <a href="{% url 'groups:group_detail' group.id %}">
+            <img src="{{ group.avatar.url|default:'/media/group_avatars/default_group.png' }}" alt="{{ group.name }}" class="group-avatar">
+            <h3>{{ group.name }}</h3>
+            <p class="group-description">{{ group.description|default:"Опис відсутній" }}</p>
+        </a>
+        <div class="group-meta">
+            <span class="group-category">
+                Категорія: {{ group.category.name|default:"Без категорії" }}
+            </span>
+            <span class="group-privacy {% if group.public_or_private == 'private' %}private{% else %}public{% endif %}">
+                {% if group.public_or_private == "private" %}
+                    🔒 Закрита
+                {% else %}
+                    🌐 Відкрита
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    {% empty %}
+        <h4>Групи відсутні.</h4>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ page_obj.previous_page_number }}">Попередня</a>
+    {% endif %}
+    <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ page_obj.next_page_number }}">Наступна</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

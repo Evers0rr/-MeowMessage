@@ -11,6 +11,7 @@ class NotificationListView(LoginRequiredMixin, ListView):
     model = Notification
     template_name = 'notifications/notifications.html'
     context_object_name = 'notifications'
+    paginate_by = 5
 
     def get_queryset(self):
         return Notification.objects.filter(recipient=self.request.user).order_by('-created_at')

@@ -1,0 +1,53 @@
+from django.urls import path
+from .views import (
+    GroupListView,
+    GroupDetailView,
+    ToggleMembershipView,
+    GroupRequestsView,
+    GroupRequestActionView,
+    GroupInvitationView,
+    AcceptGroupInvitationView,
+    DeclineGroupInvitationView,
+    GroupRolesView,
+    update_role,
+    KickMemberView,
+    GroupManageView,
+    MyGroupsListView,
+    GroupCreateView,
+    GroupPostsView,
+    CreateGroupPostView,
+    GroupPostDetailView,
+    GroupActivityView,
+    GroupPostDeleteView,
+    DeleteCommentView,
+    like_group_post,
+    dislike_group_post,
+)
+
+
+app_name = 'groups'
+
+urlpatterns = [
+    path('', GroupListView.as_view(), name='list'),
+    path('create/', GroupCreateView.as_view(), name='create'),
+    path('my-groups/', MyGroupsListView.as_view(), name='my-groups'),
+    path('<int:pk>/toggle_membership/', ToggleMembershipView.as_view(), name='toggle_membership'),
+    path('<int:pk>/manage/', GroupManageView.as_view(), name="group_manage"),
+    path('<int:pk>/activity/', GroupActivityView.as_view(), name="group-activity"),
+    path('<int:pk>/requests/<int:request_id>/action/', GroupRequestActionView.as_view(), name="group-request-action"),
+    path('<int:pk>/requests/', GroupRequestsView.as_view(), name="group-requests"),
+    path('<int:pk>/invite/', GroupInvitationView.as_view(), name='group-invite'),
+    path('invitation/<int:invitation_id>/accept/', AcceptGroupInvitationView.as_view(), name='group-invite-accept'),
+    path('invitation/<int:invitation_id>/decline/', DeclineGroupInvitationView.as_view(), name='group-invite-decline'),
+    path('<int:pk>/roles/update/<int:user_id>/', update_role, name='update-role'),
+    path('<int:pk>/roles/kick/<int:user_id>/', KickMemberView.as_view(), name="kick-member"),
+    path('<int:pk>/roles/', GroupRolesView.as_view(), name='group-roles'),
+    path('<int:pk>/', GroupDetailView.as_view(), name='group_detail'),
+    path('<int:pk>/posts/', GroupPostsView.as_view(), name='group-posts'),
+    path('<int:pk>/posts/create/', CreateGroupPostView.as_view(), name='create-group-post'),
+    path('<int:group_pk>/posts/<int:pk>/', GroupPostDetailView.as_view(), name='group-post-detail'),
+    path('<int:group_pk>/posts/<int:pk>/like/', like_group_post, name="group-like-post"),
+    path('<int:group_pk>/posts/<int:pk>/dislike/', dislike_group_post, name="group-dislike-post"),
+    path('group/<int:group_pk>/posts/<int:pk>/delete/',GroupPostDeleteView.as_view(),name='group-post-delete'),
+    path('<int:group_pk>/posts/<int:post_pk>/comments/<int:comment_pk>/delete/', DeleteCommentView.as_view(), name='delete-comment'),
+]

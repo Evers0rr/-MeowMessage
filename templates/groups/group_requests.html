@@ -1,0 +1,52 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Заявки на вступ — {{ group.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/group_requests.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="requests-container">
+    <h1>Заявки на вступ до групи: {{ group.name }}</h1>
+
+    {% if requests %}
+        <div id="requests-list">
+            {% for req in requests %}
+            <div class="request-card" id="request-{{ req.id }}">
+                <div class="req-left">
+                    <img src="{{ req.user.avatar.url|default:'/media/avatars/default.jpg' }}" 
+                         alt="{{ req.user.username }}" 
+                         class="req-avatar">
+                </div>
+
+                <div class="req-main">
+                    <a href="{% url 'profile' username=req.user.username %}" class="req-username">
+                        {{ req.user.username }}
+                    </a>
+                    <div class="req-meta">Запит відправлено: {{ req.requested_at|date:"d.m.Y о H:i" }}</div>
+                </div>
+
+                <div class="req-actions">
+                    <button class="btn accept-btn" 
+                            data-request-id="{{ req.id }}" 
+                            data-action="accept">
+                        <span>Прийняти</span>
+                    </button>
+                    <button class="btn reject-btn" 
+                            data-request-id="{{ req.id }}" 
+                            data-action="reject">
+                        <span>Відхилити</span>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Наразі немає активних заявок на вступ</p>
+    {% endif %}
+</div>
+
+<script src="{% static 'groups/js/requests.js' %}" defer></script>
+{% endblock %}

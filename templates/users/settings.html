@@ -39,7 +39,6 @@
                 </div>
             </div>
 
-            <!-- Правая колонка - форма -->
             <div class="settings-form">
                 <div class="form-grid">
                     <div class="form-column">
@@ -89,27 +88,51 @@
                                 <div class="error-message">{{ form.country.errors }}</div>
                             {% endif %}
                         </div>
+                        
+                        <div class="form-full-width">
+                            <div class="form-group">
+                                {{ form.bio.label_tag }}
+                                {{ form.bio }}
+                                {% if form.bio.errors %}
+                                    <div class="error-message">{{ form.bio.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>                                      
+
+                        <div class="cover-section">
+                            <h3>Обкладинка профілю</h3>
+                        
+                            <div class="cover-preview-container"
+                                 data-clear-url="{% url 'clear-cover' %}"
+                                 data-csrf-token="{{ csrf_token }}">
+                                {% if user.cover_image %}
+                                    <img id="cover-preview" src="{{ user.cover_image.url }}" alt="Обкладинка">
+                                {% else %}
+                                    <div id="cover-preview" class="cover-placeholder">
+                                        <span>Немає обкладинки</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        
+                            <div class="cover-controls">
+                                <label for="coverImageInput" class="file-input-label">
+                                    <span>Обрати фото</span>
+                                    <input type="file" id="coverImageInput" name="cover_image" accept="image/*" hidden>
+                                </label>
+                            
+                                {% if user.cover_image %}
+                                    <button type="button" id="clear-cover-btn" class="btn-danger">
+                                        Видалити обкладинку
+                                    </button>
+                                {% endif %}
+                            </div>
+                        
+                            <div class="cover-tips">
+                                <small>📸 Рекомендований розмір обкладинки: <b>1920×600px</b></small>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="form-full-width">
-                    <div class="form-group">
-                        {{ form.bio.label_tag }}
-                        {{ form.bio }}
-                        {% if form.bio.errors %}
-                            <div class="error-message">{{ form.bio.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="form-group">
-                        {{ form.birthday.label_tag }}
-                        {{ form.birthday }}
-                        {% if form.birthday.errors %}
-                            <div class="error-message">{{ form.birthday.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-
                 <button type="submit" class="btn-primary">Зберегти зміни</button>
             </div>
         </div>

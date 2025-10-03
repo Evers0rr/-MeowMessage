@@ -12,10 +12,12 @@ media/**
 !media/avatars/default.jpg
 !media/covers/
 !media/group_avatars
+!media/group_avatars/default_group.png
 !media/group_chat_files
 !media/group_posts
 !media/post_images
 !media/private_chat_files
+!media/icon.jpg
 
 .env
 

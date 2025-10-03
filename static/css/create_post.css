@@ -1,0 +1,23 @@
+.group-create-container {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.group-create-container h1 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-control {
+    border-radius: 5px;
+}
+
+textarea.form-control {
+    resize: vertical;
+}
+
+.btn {
+    border-radius: 5px;
+}

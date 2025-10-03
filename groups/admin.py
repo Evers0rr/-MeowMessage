@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Group, MemberShip, GroupCategory, GroupPost, GroupComment, GroupJoinRequest, GroupInvitation
+from .models import Group, MemberShip, GroupCategory, GroupPost, GroupComment, GroupJoinRequest, GroupInvitation, GroupLike
 
 # Register your models here.
 @admin.register(GroupCategory)
@@ -44,6 +44,11 @@ class GroupInvitationAdmin(admin.ModelAdmin):
     search_fields = ('inviter__username', 'invitee__username', 'group__name', 'status')
     list_filter = ('status', 'invited_at')
     ordering = ('-invited_at',)
-
+@admin.register(GroupLike)
+class GroupLikeAdmin(admin.ModelAdmin):
+    list_display = ('like_type', 'user', 'post', 'created_at')
+    search_fields = ('user__username', 'post__id')
+    list_filter = ('like_type', 'created_at')
+    ordering = ('-created_at',)
 
 

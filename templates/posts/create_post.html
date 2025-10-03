@@ -1,0 +1,38 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Створити пост{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Створити пост</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+            {% for error in form.title.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="mb-3">
+            {{ form.content.label_tag }}
+            {{ form.content }}
+            {% for error in form.content.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="mb-3">
+            {{ form.privacy_status.label_tag }}
+            {{ form.privacy_status }}
+            {% for error in form.privacy_status.errors %}
+                <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>       
+        <div class="mb-3">
+            {{ form.image.label_tag }}
+            {{ form.image }}
+            {% for error in form.image.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+        <button type="submit" class="btn btn-success">Опублікувати</button>
+        <a href="{% url 'posts:posts-list' %}" class="btn btn-secondary">Скасувати</a>
+    </form>
+</div>
+{% endblock %}

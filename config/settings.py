@@ -26,13 +26,25 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = []
 
 # Abstact user model
 
 AUTH_USER_MODEL = 'users.User'
+
+# Video size and format
+
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 15 * 1024 * 1024  # 15MB
+# FILE_UPLOAD_MAX_MEMORY_SIZE = 15 * 1024 * 1024  # 15MB
+
+# ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm']
+
+
+# Path to login
+
+LOGIN_URL = '/users/login/'
 
 # Site's email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

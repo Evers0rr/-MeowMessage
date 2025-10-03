@@ -1,0 +1,175 @@
+.friends-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.friends-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.friends-header h1 {
+    margin: 0;
+    color: #333;
+    font-size: 32px;
+}
+
+.friends-count {
+    text-align: center;
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.count-number {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.count-text {
+    font-size: 14px;
+    color: #666;
+}
+
+.friends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.friend-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.friend-info {
+    flex: 1;
+}
+
+.friend-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.friend-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #222;
+}
+
+.friend-details h3 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.friend-since {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.no-friends {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px dashed #dee2e6;
+}
+
+.no-friends-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.no-friends h2 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.no-friends p {
+    margin: 0 0 20px 0;
+    color: #666;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+    padding: 20px;
+}
+
+.pagination-btn {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.pagination-btn:hover {
+    background: #0056b3;
+    color: white;
+}
+
+.pagination-info {
+    color: #666;
+    font-weight: 500;
+}
+
+.friend-status {
+    margin: 0 0 5px 0;
+    color: #007bff;
+    font-size: 14px;
+}
+
+
+@media (max-width: 768px) {
+    .friends-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .friend-item {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .friend-link {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .pagination {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

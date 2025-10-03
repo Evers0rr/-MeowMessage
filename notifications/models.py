@@ -27,15 +27,13 @@ class Notification(models.Model):
     feedback = models.ForeignKey(Feedback, on_delete=models.CASCADE, related_name='notifications', blank=True, null=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    message = models.TextField(null=True, blank=True)
+    message = models.TextField(blank=True, default='')
 
     def clean(self):
         if self.notification_type == 'comment' and not self.comment:
             raise ValidationError("Коментар повинен бути вказаний для типу 'comment'.")
         if self.notification_type == 'friend_request' and not self.friend_request:
             raise ValidationError("Запит на дружбу повинен бути вказаний для типу 'friend_request'.")
-        if self.notification_type == 'friend_accept' and not self.friend_request:
-            raise ValidationError("Запит на дружбу повинен бути вказаний для типу 'friend_accept'.")
         if self.notification_type == 'group_invitation' and not self.group_invitation:
             raise ValidationError("Запрошення до групи повинно бути вказане для типу 'group_invitation'.")
         if self.notification_type == 'feedback' and not self.feedback:

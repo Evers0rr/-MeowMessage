@@ -1,0 +1,392 @@
+/* Основные стили для страницы постов группы */
+.posts-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #ffffff;
+}
+
+/* Заголовок страницы */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #333;
+}
+
+.page-title {
+    color: #333;
+    font-size: 2em;
+    font-weight: 700;
+    margin: 0;
+}
+
+.page-subtitle {
+    color: #666;
+    font-size: 1.1em;
+    margin-top: 5px;
+}
+
+/* Кнопка создания поста */
+.create-post-btn {
+    background: #333;
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 2px solid #333;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.create-post-btn:hover {
+    background: white;
+    color: #333;
+    transform: translateY(-2px);
+}
+
+/* Сетка постов */
+.posts-grid {
+    display: grid;
+    gap: 25px;
+}
+
+/* Карточка поста */
+.post-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e8e8e8;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #333;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
+    border-color: #ccc;
+}
+
+.post-card:hover::before {
+    transform: scaleX(1);
+}
+
+/* Заголовок поста */
+.post-title {
+    margin-bottom: 15px;
+}
+
+.post-title a {
+    color: #333;
+    text-decoration: none;
+    font-size: 1.4em;
+    font-weight: 700;
+    line-height: 1.3;
+    transition: color 0.3s ease;
+    display: block;
+}
+
+.post-title a:hover {
+    color: #666;
+}
+
+/* Автор поста */
+.post-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8f8f8;
+    border-radius: 8px;
+}
+
+.author-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #333;
+    transition: transform 0.2s ease;
+}
+
+.author-link:hover {
+    transform: translateX(3px);
+}
+
+.author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    transition: border-color 0.3s ease;
+}
+
+.author-link:hover .author-avatar {
+    border-color: #999;
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.post-date {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+
+/* Изображение поста */
+.post-image-container {
+    margin: 15px 0;
+    text-align: center;
+}
+
+.post-image {
+    max-width: 100%;
+    max-height: 250px;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+    transition: transform 0.3s ease;
+}
+
+.post-image:hover {
+    transform: scale(1.01);
+}
+
+/* Контент поста */
+.post-content {
+    color: #444;
+    line-height: 1.6;
+    margin: 15px 0;
+    font-size: 14px;
+    padding: 15px;
+    background: #fafafa;
+    border-radius: 6px;
+    border-left: 3px solid #ccc;
+}
+
+/* Статистика поста */
+.post-stats {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #666;
+}
+
+.stat-item::before {
+    font-size: 14px;
+}
+
+.stat-comments::before { content: "💬"; }
+.stat-views::before { content: "👁️"; }
+
+/* Пагинация */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e8e8e8;
+}
+
+.pagination a, .pagination span {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.pagination a:hover {
+    background: #333;
+    color: white;
+    border-color: #333;
+}
+
+.pagination .current {
+    background: #f0f0f0;
+    color: #333;
+    border-color: #ccc;
+}
+
+.pagination-info {
+    color: #666;
+    font-size: 13px;
+    margin: 0 15px;
+}
+
+/* Пустое состояние */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f8f8;
+    border-radius: 10px;
+    border: 2px dashed #ccc;
+}
+
+.empty-state p {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0;
+}
+
+.empty-state .create-post-btn {
+    margin-top: 20px;
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.post-card {
+    animation: fadeInUp 0.5s ease;
+}
+
+.post-card:nth-child(1) { animation-delay: 0.1s; }
+.post-card:nth-child(2) { animation-delay: 0.2s; }
+.post-card:nth-child(3) { animation-delay: 0.3s; }
+.post-card:nth-child(4) { animation-delay: 0.4s; }
+.post-card:nth-child(5) { animation-delay: 0.5s; }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .posts-container {
+        padding: 15px;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .page-title {
+        font-size: 1.6em;
+    }
+    
+    .create-post-btn {
+        align-self: stretch;
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .post-card {
+        padding: 20px;
+    }
+    
+    .post-title a {
+        font-size: 1.2em;
+    }
+    
+    .post-author {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .author-link {
+        width: 100%;
+    }
+    
+    .pagination {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .pagination-info {
+        order: -1;
+        width: 100%;
+        text-align: center;
+        margin: 10px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .posts-container {
+        padding: 10px;
+    }
+    
+    .post-card {
+        padding: 15px;
+    }
+    
+    .post-title a {
+        font-size: 1.1em;
+    }
+    
+    .author-avatar {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+/* Индикатор нового поста */
+.new-post-indicator {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 8px;
+    height: 8px;
+    background: #333;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}

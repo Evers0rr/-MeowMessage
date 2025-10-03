@@ -1,0 +1,110 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}
+{% if category == 'friends' %}Пости друзів
+{% elif category == 'groups' %}Пости груп
+{% elif category == 'public' %}Публічні пости
+{% elif category == 'subscriptions' %}Пости підписок
+{% elif category == 'private' %}Приватні пости
+{% else %}Пости{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/post_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="posts-container">
+    <div class="page-header" style="align-items:center;">
+        <div>
+            <h1 class="page-title">
+                {% if category == 'friends' %}Пости друзів
+                {% elif category == 'groups' %}Пости груп
+                {% elif category == 'public' %}Публічні пости
+                {% elif category == 'subscriptions' %}Пости підписок
+                {% elif category == 'private' %}Приватні пости
+                {% else %}Пости{% endif %}
+            </h1>
+            <div class="page-subtitle">Показано {{ page_obj.paginator.count }} постів</div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;">
+            <form method="get" class="search-form" style="display:flex;gap:8px;align-items:center;">
+                <input name="username" value="{{ request.GET.username|default:'' }}" placeholder="Фільтр: нікнейм автора" class="form-control" />
+                <button type="submit" class="btn btn-sm">Фільтрувати</button>
+                <a href="{% url 'posts:category-posts' category=category %}" class="btn btn-sm btn-secondary">Скинути</a>
+            </form>
+            <a href="{% url 'posts:posts-list' %}" class="btn btn-sm">До всіх постів</a>
+        </div>
+    </div>
+
+    <div class="posts-grid" style="margin-top:20px;">
+        {% if posts %}
+            {% for post in posts %}
+                <article class="post-card" style="margin-bottom:18px;">
+                    
+                    {% if post.group %}
+                        <div class="post-title">
+                            <a href="{% url 'groups:group-post-detail' group_pk=post.group.pk pk=post.pk %}">
+                                {{ post.title|default:post.content|truncatechars:80 }}
+                            </a>
+                        </div>
+                        <div class="post-author">
+                            <a href="{% url 'profile' username=post.author.username %}" class="author-link">
+                                <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" class="author-avatar" />
+                                <span class="author-name">{{ post.author.username }}</span>
+                            </a>
+                            <span class="in-group" style="margin-left:8px;color:#777;">
+                                в <a href="{% url 'groups:group_detail' post.group.pk %}">{{ post.group.name }}</a>
+                            </span>
+                            <span style="margin-left:auto;color:#666;font-size:12px;">{{ post.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        <div class="post-content">{{ post.content|truncatewords:50 }}</div>
+                        <div style="margin-top:8px;">
+                            <a href="{% url 'groups:group-post-detail' group_pk=post.group.pk pk=post.pk %}">Читати повністю →</a>
+                        </div>
+
+                    {% else %}
+                        <div class="post-title">
+                            <a href="{% url 'posts:post-detail' pk=post.pk %}">
+                                {{ post.title|default:post.content|truncatechars:80 }}
+                            </a>
+                        </div>
+                        <div class="post-author">
+                            <a href="{% url 'profile' username=post.author.username %}" class="author-link">
+                                <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" class="author-avatar" />
+                                <span class="author-name">{{ post.author.username }}</span>
+                            </a>
+                            <span style="margin-left:auto;color:#666;font-size:12px;">{{ post.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        <div class="post-content">{{ post.content|truncatewords:50 }}</div>
+                        <div style="margin-top:8px;">
+                            <a href="{% url 'posts:post-detail' pk=post.pk %}">Читати повністю →</a>
+                        </div>
+                    {% endif %}
+
+                </article>
+            {% endfor %}
+        {% else %}
+            <p style="margin-top:20px;">📭 Немає постів у цій категорії</p>
+        {% endif %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if username_filter %}&username={{ username_filter }}{% endif %}">&laquo; Перша</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if username_filter %}&username={{ username_filter }}{% endif %}">Назад</a>
+            {% endif %}
+
+            <span class="current">Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if username_filter %}&username={{ username_filter }}{% endif %}">Вперед</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if username_filter %}&username={{ username_filter }}{% endif %}">Остання &raquo;</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

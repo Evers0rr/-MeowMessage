@@ -1,0 +1,78 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Створити групу{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/group_create.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="group-create-container">
+    <h1>Створити групу</h1>
+
+    <form id="group-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-column avatar-column">
+                <img id="avatar-preview" 
+                    src="{% if form.instance.avatar %}{{ form.instance.avatar.url }}{% else %}{% static 'group_avatars/default_group.png' %}{% endif %}" 
+                    alt="Аватар групи" class="avatar-preview">
+                
+                <label class="file-input-label">
+                    <span>Обрати аватар</span>
+                    <input type="file" id="avatarInput" name="avatar" accept="image/*" hidden>
+                </label>
+            </div>
+
+            <div class="form-column">
+                <div class="form-group">
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="error-message">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.description.label_tag }}
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="error-message">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.category.label_tag }}
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <div class="error-message">{{ form.category.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.public_or_private.label_tag }}
+                    {{ form.public_or_private }}
+                    {% if form.public_or_private.errors %}
+                        <div class="error-message">{{ form.public_or_private.errors }}</div>
+                    {% endif %}
+                </div>             
+                <button type="submit" class="btn-primary">Створити групу</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const avatarInput = document.getElementById("avatarInput");
+    const avatarPreview = document.getElementById("avatar-preview");
+
+    avatarInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file || !file.type.startsWith("image/")) return;
+        avatarPreview.src = URL.createObjectURL(file);
+    });
+});
+</script>
+{% endblock %}

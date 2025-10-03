@@ -1,0 +1,43 @@
+{% extends "base/basic.html" %}
+{% block title %}Управління {{ group.name }}{% endblock %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/group_manage.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="manage-container">
+    <h1>Управління групою: {{ group.name }}</h1>
+
+    <div class="manage-buttons">
+
+        {% if is_admin %}
+            <a href="{% url 'groups:group-roles' group.id %}" class="btn">Ролі</a>
+        {% endif %}
+
+        {% if is_moderator and group.public_or_private == "private" %}
+            <a href="{% url 'groups:group-requests' group.id %}" class="btn">Заявки</a>
+            <a href="{% url 'groups:group-invite' group.pk %}" class="btn btn-success">Запросити користувача</a>
+        {% endif %}
+    </div>
+
+    <div class="group-members">
+        <h3>Учасники</h3>
+        <ul>
+            {% for membership in memberships %}
+                <li>
+                    <span class="member-name">{{ membership.user.username }}</span>
+                    <span class="member-role">
+                        {{ membership.get_role_display }}
+                    </span>
+                </li>
+            {% empty %}
+                <li>Немає учасників</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+
+</div>
+{% endblock %}

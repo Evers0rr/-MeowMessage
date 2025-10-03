@@ -29,8 +29,10 @@ class User(AbstractUser):
     cover_image = models.ImageField(
         upload_to='covers/',
         blank=True,
-        null=True)    
-
+        null=True,
+        verbose_name='Зображення-обкладинка'
+        )   
+    
     def __str__(self):
         return self.username
     
@@ -60,7 +62,7 @@ class User(AbstractUser):
         return User.objects.filter(
             id__in=Subscribers.objects.filter(user=self).values('channel')
         )
-        
+         
     class Meta:
         verbose_name = 'Користувач'
         verbose_name_plural = 'Користувачі'

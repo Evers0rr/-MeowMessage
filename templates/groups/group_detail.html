@@ -1,0 +1,78 @@
+{% extends "base/basic.html" %}
+{% block title %}{{ group.name }}{% endblock %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/group_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="group-detail-container">
+    <div class="group-info">
+        <h1>{{ group.name }}</h1>
+        <img src="{{ group.avatar.url|default:'/media/group_avatars/default.jpg' }}"
+             alt="{{ group.name }}"
+             class="group-avatar">
+        <p class="group-description">{{ group.description|default:"Опис відсутній" }}</p>
+        {% if user.is_authenticated %}
+            {% if is_member %}
+                <button id="toggle-membership-btn">Покинути групу</button>
+                <a href="{% url 'groups:group-activity' group.id %}" class="manage-btn">Перейти до групи</a>
+                {% if is_admin or is_moderator or is_owner %}
+                    <a href="{% url 'groups:group_manage' group.id %}" class="manage-btn">Перейти до налаштування групи</a>
+                {% endif %}
+            {% else %}
+                <button id="toggle-membership-btn">Приєднатися</button>
+            {% endif %}
+        {% else %}
+            <p>Щоб приєднатися до групи, будь ласка, <a href="{% url 'login' %}">увійдіть</a>.</p>
+        {% endif %}
+
+    </div>
+    <div class="group-members">
+        <h3>Учасники</h3>
+        <ul>
+            {% for membership in memberships %}
+                <li>
+                    <span class="member-name">{{ membership.user.username }}</span>
+                    <span class="member-role">
+                        {{ membership.get_role_display }}
+                    </span>
+                </li>
+            {% empty %}
+                <li>Немає учасників</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('toggle-membership-btn');
+    if(btn){
+        btn.addEventListener('click', () => {
+            fetch("{% url 'groups:toggle_membership' group.id %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'joined'){
+                    btn.textContent = 'Покинути групу';
+                } else if(data.status === 'left'){
+                    btn.textContent = 'Приєднатися';
+                } else if(data.status === 'requested'){
+                    btn.textContent = 'Запит на приєднання надіслано';
+                    btn.disabled = true;
+                } else if(data.status === 'error'){
+                    alert(data.message);
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -19,15 +19,16 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import include
-from posts.views import PostListView
+from posts.views import HomeView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', PostListView.as_view(), name='post-list'),
+    path('', HomeView.as_view(), name='home'),
     path('posts/', include('posts.urls')),
     path('users/', include('users.urls')),
     path('friends/', include('friends.urls')),
-     path('notifications/', include(('notifications.urls', 'notifications'), namespace='notifications')),
+    path('notifications/', include(('notifications.urls', 'notifications'), namespace='notifications')),
+    path('groups/', include('groups.urls')),
 ]
 
 if settings.DEBUG:
