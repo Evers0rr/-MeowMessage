@@ -27,6 +27,7 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('users/', include('users.urls')),
     path('friends/', include('friends.urls')),
+    path('chat/', include('chat.urls')),
     path('notifications/', include(('notifications.urls', 'notifications'), namespace='notifications')),
     path('groups/', include('groups.urls')),
 ]

@@ -1,0 +1,91 @@
+
+.profile {
+    display: grid;
+    grid-template-columns: 200px 1fr; /* Левая колонка для аватара и статуса, правая для данных */
+    gap: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+/* Аватар */
+#avatar-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#avatar-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%; /* круглый аватар */
+    border: 2px solid #ccc;
+    margin-bottom: 15px;
+}
+
+/* Информация о пользователе */
+.profile p {
+    margin: 6px 0;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.profile strong {
+    display: inline-block;
+    width: 160px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Заголовки разделов */
+h2, h3 {
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #222;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+/* Списки */
+ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+ul li {
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* BIO (отдельный блок, если нужно выделить) */
+.bio-block {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f1f1f1;
+    border-radius: 8px;
+    font-style: italic;
+    border: 1px solid #ddd;
+}
+
+/* Для адаптива */
+@media (max-width: 768px) {
+    .profile {
+        grid-template-columns: 1fr; /* в одну колонку на мобильных */
+        text-align: center;
+    }
+
+    .profile strong {
+        width: auto;
+        display: block;
+        margin-bottom: 4px;
+    }
+}
