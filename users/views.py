@@ -42,7 +42,7 @@ class RegisterView(UserPassesTestMixin, View):
 
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            activation_link = f"http://127.0.0.1:8000/users/activate/{uid}/{token}/"
+            activation_link = f"{settings.SITE_URL}/users/activate/{uid}/{token}/"
 
             send_mail(
                 subject="Підтвердження акаунту",
@@ -216,7 +216,7 @@ class SettingsView(LoginRequiredMixin, View):
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 token = default_token_generator.make_token(user)
                 encoded_email = urlsafe_base64_encode(force_bytes(new_email))
-                confirm_link = f"http://127.0.0.1:8000/users/confirm-email/{uid}/{token}/{encoded_email}/"
+                confirm_link = f"{settings.SITE_URL}/users/confirm-email/{uid}/{token}/{encoded_email}/"
 
                 send_mail(
                     subject="Підтвердження зміни пошти",
