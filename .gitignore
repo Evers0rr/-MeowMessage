@@ -8,15 +8,30 @@ __pycache__/
 media/**
 
 !media/.gitkeep
+
 !media/avatars/
+!media/avatars/.gitkeep
 !media/avatars/default.jpg
+
 !media/covers/
-!media/group_avatars
+!media/covers/.gitkeep
+
+!media/group_avatars/
+!media/group_avatars/.gitkeep
 !media/group_avatars/default_group.png
-!media/group_chat_files
-!media/group_posts
-!media/post_images
-!media/private_chat_files
+
+!media/group_chat_files/
+!media/group_chat_files/.gitkeep
+
+!media/group_posts/
+!media/group_posts/.gitkeep
+
+!media/post_images/
+!media/post_images/.gitkeep
+
+!media/private_chat_files/
+!media/private_chat_files/.gitkeep
+
 !media/icon.jpg
 
 .env
@@ -29,5 +44,4 @@ celerybeat-schedule-wal
 
 help.txt
 
-/staticfiles
 
