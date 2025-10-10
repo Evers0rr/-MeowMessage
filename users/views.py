@@ -37,30 +37,29 @@ class RegisterView(UserPassesTestMixin, View):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = False
+            user.is_active = True
             user.save()
 
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            activation_link = f"{settings.SITE_URL}/users/activate/{uid}/{token}/"
+            # uid = urlsafe_base64_encode(force_bytes(user.pk))
+            # token = default_token_generator.make_token(user)
+            # activation_link = f"{settings.SITE_URL}/users/activate/{uid}/{token}/"
 
-            send_mail(
-                subject="Підтвердження акаунту",
-                message=(
-                    f"Привіт {user.username}!\n\n"
-                    f"Щоб активувати акаунт, перейдіть за посиланням:\n{activation_link}\n\n"
-                    f"Якщо ви не реєструвалися, просто проігноруйте це повідомлення."
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-            )
+            # send_mail(
+            #     subject="Підтвердження акаунту",
+            #     message=(
+            #         f"Привіт {user.username}!\n\n"
+            #         f"Щоб активувати акаунт, перейдіть за посиланням:\n{activation_link}\n\n"
+            #         f"Якщо ви не реєструвалися, просто проігноруйте це повідомлення."
+            #     ),
+            #     from_email=settings.DEFAULT_FROM_EMAIL,
+            #     recipient_list=[user.email],
+            # )
 
             return render(request, ALERT_TEMPLATE, {
-                'message': "Реєстрація пройшла успішно! Лист для активації відправлено.",
+                'message': "Реєстрація пройшла успішно!",
                 'redirect_url': reverse_lazy('login')
             })
 
-    
         return render(request, REGISTER_TEMPLATE, {'form': form})
 
     def test_func(self):
@@ -209,63 +208,37 @@ class SettingsView(LoginRequiredMixin, View):
 
             new_email = form.cleaned_data.get('new_email')
             if new_email and new_email != user.email:
-                user.new_email = new_email
-                user.new_email_at = timezone.now()
-                user.save(update_fields=['new_email'])
-
-                uid = urlsafe_base64_encode(force_bytes(user.pk))
-                token = default_token_generator.make_token(user)
-                encoded_email = urlsafe_base64_encode(force_bytes(new_email))
-                confirm_link = f"{settings.SITE_URL}/users/confirm-email/{uid}/{token}/{encoded_email}/"
-
-                send_mail(
-                    subject="Підтвердження зміни пошти",
-                    message=f"Привіт {user.username}!\nЩоб підтвердити нову пошту, перейдіть за посиланням:\n{confirm_link}",
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[new_email],
-                )
+                user.email = new_email
+                user.new_email = None
+                user.save(update_fields=['email', 'new_email'])
 
                 return render(request, ALERT_TEMPLATE, {
-                    'message': "Лист на підтвердження нової пошти відправлено!",
+                    'message': "Зміни профілю збережено!",
                     'redirect_url': request.path
                 })
+
+
+                # uid = urlsafe_base64_encode(force_bytes(user.pk))
+                # token = default_token_generator.make_token(user)
+                # encoded_email = urlsafe_base64_encode(force_bytes(new_email))
+                # confirm_link = f"{settings.SITE_URL}/users/confirm-email/{uid}/{token}/{encoded_email}/"
+
+                # send_mail(
+                #     subject="Підтвердження зміни пошти",
+                #     message=f"Привіт {user.username}!\nЩоб підтвердити нову пошту, перейдіть за посиланням:\n{confirm_link}",
+                #     from_email=settings.DEFAULT_FROM_EMAIL,
+                #     recipient_list=[new_email],
+                # )
+
+
             user.save()
             return render(request, ALERT_TEMPLATE, {
                 'message': "Зміни профілю збережено!",
                 'redirect_url': request.path
             })
+
         return render(request, SETTINGS_TEMPLATE, {'form': form})
 
-def confirm_new_email(request, uidb64, token, encoded_email):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-        new_email = force_str(urlsafe_base64_decode(encoded_email))
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        return render(request, EMAIL_CONFIRM_TEMPLATE, {
-            'message': "Токен недійсний або посилання прострочене.",
-            'redirect_url': '/'
-        })
-
-    if user.new_email and default_token_generator.check_token(user, token):
-        user.email = new_email
-        user.new_email = None
-        user.save(update_fields=['email', 'new_email'])
-        return render(request, EMAIL_CONFIRM_TEMPLATE, {
-            'message': "Електронну пошту успішно змінено!",
-            'redirect_url': '/'
-        })
-
-    if user.new_email is None:
-        return render(request, EMAIL_CONFIRM_TEMPLATE, {
-            'message': "Посилання вже використано або email скинуто.",
-            'redirect_url': '/'
-        })
-
-    return render(request, EMAIL_CONFIRM_TEMPLATE, {
-        'message': "Токен недійсний або посилання прострочене.",
-        'redirect_url': '/'
-    })
 
 
 class ClearAvatarView(LoginRequiredMixin, View):

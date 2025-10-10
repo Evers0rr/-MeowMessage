@@ -1,0 +1,61 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block content %}
+<h2>Груповий чат: {{ chat.name }}</h2>
+
+<div id="group-chat-box" style="border:1px solid #ccc; padding:10px; height:400px; overflow-y:scroll; margin-bottom:10px;">
+</div>
+
+<div style="display:flex; gap:5px;">
+    <input type="text" id="group-message-input" placeholder="Введіть повідомлення" style="flex:1;">
+    <input type="file" id="group-file-input">
+    <button onclick="sendGroupMessage('{{ chat.id }}')">Відправити</button>
+</div>
+
+<input type="hidden" id="group-chat-id" value="{{ chat.id }}">
+
+<script src="{% static 'chat/chat.js' %}"></script>
+<script>
+function sendGroupMessage(chatId) {
+    chatId = Number(chatId);
+    const text = document.getElementById('group-message-input').value;
+    const fileInput = document.getElementById('group-file-input');
+    const formData = new FormData();
+    formData.append('text', text);
+    formData.append('file', fileInput.files[0]);
+    formData.append('content_type', fileInput.files.length ? 'file' : 'text');
+
+    fetch(`/chat/group/${chatId}/send/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken')},
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('group-message-input').value = '';
+            fileInput.value = '';
+            loadGroupMessages();
+        } else {
+            alert(data.error);
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

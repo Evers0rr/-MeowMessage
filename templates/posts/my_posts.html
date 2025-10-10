@@ -10,7 +10,6 @@
 
 {% block content %}
 <div class="my-posts-container">
-    <!-- Заголовок и статистика -->
     <div class="posts-header">
         <div class="header-content">
             <h1 class="page-title">
@@ -24,7 +23,6 @@
         </div>
     </div>
 
-    <!-- Фильтры -->
     <div class="filters-section">
         <form method="get" class="filters-form">
             <div class="filter-row">
@@ -60,7 +58,6 @@
         </form>
     </div>
 
-    <!-- Список постов -->
     <div class="posts-section">
         {% if posts %}
             <div class="posts-grid">
@@ -131,7 +128,6 @@
         {% endif %}
     </div>
 
-    <!-- Пагинация -->
     {% if is_paginated %}
         <div class="pagination">
             <div class="pagination-info">

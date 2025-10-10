@@ -28,11 +28,18 @@
                     <div class="friend-details">
                         <h3>{{ friend_data.user.username }}</h3>
                         <p class="friend-status">
-                            <strong>Статус:</strong> {{ friend_data.user.status|default:"Не вказано" }}
+                            <strong>Статус:</strong>
+                            {{ friend_data.user.status|default:"Не вказано" }}
                         </p>
                         <p class="friend-since">Друзі з {{ friend_data.friends_since|date:"d.m.Y" }}</p>
                     </div>
+                </a>     
+                {% if friend_data.user.username %}
+                <a href="{% url 'chat:private-chat-page' username=friend_data.user.username %}" 
+                   class="chat-btn" title="Написати повідомлення">
+                    <i class="bi bi-chat-dots"></i>
                 </a>
+                {% endif %}
             </div>
         </div>
         {% empty %}

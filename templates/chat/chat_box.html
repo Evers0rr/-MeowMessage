@@ -1,0 +1,54 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+
+<div id="chat-container" class="chat-container"
+     data-chat-type="{{ chat_type }}"
+     {% if chat_type == 'group' %}
+         data-chat-id="{{ chat.id }}"
+     {% else %}
+         data-username="{{ chat.username }}"
+     {% endif %}>
+    
+    <div class="chat-header">
+        <h2><i class="bi bi-chat-dots"></i> Чат</h2>
+    </div>
+
+    <div id="chat-messages" class="chat-box">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.sender == user %}my-message{% else %}other-message{% endif %}">
+                    <span class="sender"><i class="bi bi-person-circle"></i> {{ message.sender.username }}</span>:
+                    <span class="text">{{ message.text }}</span>
+                    {% if message.file %}
+                        <div class="attachment">
+                            <a href="{{ message.file.url }}" target="_blank">
+                                <i class="bi bi-paperclip"></i> Відкрити вкладення
+                            </a>
+                        </div>
+                    {% endif %}
+                    <span class="timestamp"><i class="bi bi-clock"></i> {{ message.created_at|date:"H:i" }}</span>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div id="no-messages" class="no-messages">Поки що немає повідомлень</div>
+        {% endif %}
+    </div>
+
+    <form id="chat-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="chat-input-area">
+            <textarea id="message-text" placeholder="Введіть повідомлення..."></textarea>
+            <input type="file" id="message-file" style="display: none;">
+            <div class="chat-actions">
+                <button type="button" id="attach-btn"><i class="bi bi-paperclip"></i></button>
+                <button type="submit" id="send-btn"><i class="bi bi-send"></i></button>
+            </div>
+        </div>
+        <div id="file-name"></div>
+    </form>
+</div>
+<script src="{% static 'chat/js/chat_box.js' %}"></script>
+{% endblock %}

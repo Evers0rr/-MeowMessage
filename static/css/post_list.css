@@ -307,7 +307,6 @@
 .post-card:nth-child(3) { animation-delay: 0.3s; }
 .post-card:nth-child(4) { animation-delay: 0.4s; }
 
-/* Адаптивность */
 @media (max-width: 1200px) {
     .posts-grid {
         grid-template-columns: repeat(2, 1fr);

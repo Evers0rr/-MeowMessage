@@ -1,0 +1,26 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block content %}
+<h2>Приватний чат з {{ other_user.username }}</h2>
+
+<div id="chat-box" style="border:1px solid #ccc; padding:10px; height:400px; overflow-y:scroll; margin-bottom:10px;"></div>
+
+<div style="display:flex; gap:5px;">
+    <input type="text" id="message-input" placeholder="Введіть повідомлення" style="flex:1;">
+    <input type="file" id="file-input">
+    <button onclick="sendPrivateMessage('{{ other_user.username }}')">Відправити</button>
+</div>
+
+<input type="hidden" id="chat-username" value="{{ other_user.username }}">
+
+<script src="{% static 'chat/chat.js' %}"></script>
+<script>
+    setInterval(() => {
+        const username = document.getElementById('chat-username').value;
+        if (username) loadPrivateMessages(username);
+    }, 3000);
+
+    loadPrivateMessages('{{ other_user.username }}');
+</script>
+{% endblock %}
