@@ -32,24 +32,18 @@
                 </div>
             </div>
 
-            {% if notification.notification_type == 'friend_request' and notification.friend_request %}
+            {% if notification.notification_type == 'friend_request' %}
               <div class="notification-actions">
-                {% if notification.friend_request.status == "pending" %}
-                  <form class="action-form notify-action" method="post"
-                        action="{% url 'friends:friend_request_action' notification.friend_request.id 'accept' %}">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-success">Прийняти</button>
-                  </form>
-                  <form class="action-form notify-action" method="post"
-                        action="{% url 'friends:friend_request_action' notification.friend_request.id 'reject' %}">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-danger">Відхилити</button>
-                  </form>
-                {% elif notification.friend_request.status == "accepted" %}
-                  <p class="text-success">✅ Ви стали друзями</p>
-                {% elif notification.friend_request.status == "rejected" %}
-                  <p class="text-muted">❌ Запит відхилено</p>
-                {% endif %}
+                <form class="action-form notify-action" method="post"
+                      action="{% url 'friends:friend_request_action' notification.friend_request.id 'accept' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Прийняти</button>
+                </form>
+                <form class="action-form notify-action" method="post"
+                      action="{% url 'friends:friend_request_action' notification.friend_request.id 'reject' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Відхилити</button>
+                </form>
               </div>
 
             {% elif notification.notification_type == 'group_invitation' and notification.group_invitation %}

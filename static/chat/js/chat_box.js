@@ -1,109 +1,102 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const chatContainer = document.getElementById('chat-container');
-    if (!chatContainer) return;
+document.addEventListener("DOMContentLoaded", () => {
+    const chatContainer = document.getElementById("chat-container");
+    const chatMessages = document.getElementById("chat-messages");
+    const chatForm = document.getElementById("chat-form");
+    const messageText = document.getElementById("message-text");
+    const messageFile = document.getElementById("message-file");
+    const attachBtn = document.getElementById("attach-btn");
+    const filePreview = document.getElementById("file-preview");
+    const fileNameSpan = document.getElementById("file-name");
+    const removeFileBtn = document.getElementById("remove-file");
 
-    const chatType = chatContainer.dataset.chatType;
-    const chatId = chatContainer.dataset.chatId;
-    const username = chatContainer.dataset.username;
-    const form = document.getElementById('chat-form');
-    const messageInput = document.getElementById('message-text');
-    const fileInput = document.getElementById('message-file');
-    const fileName = document.getElementById('file-name');
-    const messagesContainer = document.getElementById('chat-messages');
-    const noMessages = document.getElementById('no-messages');
+    let chatType = chatContainer.dataset.chatType;
+    let sendUrl = "";
 
-    fileInput.addEventListener('change', () => {
-        fileName.textContent = fileInput.files.length ? fileInput.files[0].name : '';
-    });
-
-    const attachBtn = document.getElementById('attach-btn');
-    attachBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        fileInput.click();
-    });
-
-    function getCSRF() {
-        const el = document.querySelector('[name=csrfmiddlewaretoken]');
-        return el ? el.value : '';
+    if (chatType === "group") {
+        sendUrl = `/chat/group/${chatContainer.dataset.chatId}/send/`;
+    } else {
+        sendUrl = `/chat/private/${chatContainer.dataset.username}/send/`;
     }
 
-    form.addEventListener('submit', async (e) => {
+    // Прикрепление файла
+    attachBtn.addEventListener("click", () => {
+        messageFile.click();
+    });
+
+    messageFile.addEventListener("change", () => {
+        if (messageFile.files.length > 0) {
+            fileNameSpan.textContent = messageFile.files[0].name;
+            filePreview.style.display = "inline-flex";
+        }
+    });
+
+    // Удаление файла
+    removeFileBtn.addEventListener("click", () => {
+        messageFile.value = "";
+        filePreview.style.display = "none";
+        fileNameSpan.textContent = "";
+    });
+
+    // Отправка формы
+    chatForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const text = messageInput.value.trim();
-        const file = fileInput.files[0];
-        if (!text && !file) return;
-
         const formData = new FormData();
-        formData.append('text', text);
-        if (file) formData.append('file', file);
-        formData.append('content_type', file ? 'file' : 'text');
-
-        let url = '';
-        if (chatType === 'group') {
-            url = `/chat/group/${chatId}/send/`;
-        } else {
-            url = `/chat/private/${username}/send/`;
+        formData.append("text", messageText.value);
+        if (messageFile.files[0]) {
+            formData.append("file", messageFile.files[0]);
         }
 
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
         try {
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCSRF()
-                },
+            const res = await fetch(sendUrl, {
+                method: "POST",
+                headers: { "X-CSRFToken": csrfToken },
                 body: formData
             });
-
-            if (!res.ok) {
-                const txt = await res.text();
-                console.error('Server returned not ok:', res.status, txt);
-                alert('Окак... Диви консоль');
-                return;
-            }
-
             const data = await res.json();
 
             if (data.success) {
-                const msgDiv = document.createElement('div');
-                msgDiv.classList.add('message', 'my-message', 'new-message');
-
-                if (data.file) {
-                    const link = document.createElement('a');
-                    link.href = data.file;
-                    link.textContent = "📎 " + (file ? file.name : "Файл");
-                    link.target = "_blank";
-                    msgDiv.appendChild(link);
-                    if (text) {
-                        const textElem = document.createElement('div');
-                        textElem.textContent = text;
-                        msgDiv.appendChild(textElem);
-                    }
-                } else {
-                    msgDiv.textContent = text;
-                }
-
-                messagesContainer.appendChild(msgDiv);
-                messageInput.value = '';
-                fileInput.value = '';
-                fileName.textContent = '';
-                if (noMessages) noMessages.style.display = 'none';
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-                setTimeout(() => msgDiv.classList.remove('new-message'), 400);
+                appendMessage(data);
+                messageText.value = "";
+                messageFile.value = "";
+                filePreview.style.display = "none";
+                fileNameSpan.textContent = "";
             } else if (data.error) {
-                alert('Окак: ' + data.error);
+                alert(data.error);
             }
         } catch (err) {
-            console.error('Fetch error:', err);
-            alert('Сталася помилка при відправці повідомлення');
+            console.error(err);
         }
     });
 
-    messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            form.dispatchEvent(new Event('submit'));
+    function appendMessage(msg) {
+        const div = document.createElement("div");
+        div.className = `message ${msg.sender === chatContainer.dataset.username ? "other-message" : "my-message"}`;
+        div.innerHTML = `
+            <div class="message-header">
+                <img src="/media/avatars/default.jpg" alt="avatar" class="msg-avatar">
+                <span class="sender">${msg.sender}</span>
+                <span class="timestamp">${msg.created_at}</span>
+            </div>
+            ${msg.text ? `<div class="text">${msg.text}</div>` : ""}
+            ${msg.file ? `<div class="attachment">
+                ${renderFile(msg.file)}
+            </div>` : ""}
+        `;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function renderFile(fileUrl) {
+        const ext = fileUrl.toLowerCase();
+        if ([".jpg", ".jpeg", ".png", ".gif", ".webp"].some(e => ext.endsWith(e))) {
+            return `<img src="${fileUrl}" alt="Image" class="chat-image">`;
+        } else if ([".mp4", ".mov", ".avi", ".webm"].some(e => ext.endsWith(e))) {
+            return `<video src="${fileUrl}" controls class="chat-video"></video>`;
+        } else {
+            return `<a href="${fileUrl}" target="_blank"><i class="bi bi-paperclip"></i> ${fileUrl.split("/").pop()}</a>`;
         }
-    });
+    }
 });

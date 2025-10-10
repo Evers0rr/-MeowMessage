@@ -98,15 +98,14 @@ class PrivateMessage(models.Model):
 
     def clean(self):
         if not Friendship.objects.filter(
-            Q(from_user=self.sender, to_user=self.receiver) | 
-            Q(from_user=self.receiver, to_user=self.sender),
-            status='accepted'
+            Q(user1=self.sender, user2=self.receiver) |
+            Q(user1=self.receiver, user2=self.sender)
         ).exists():
             raise ValidationError("Приватні повідомлення можна надсилати лише друзям.")
-        
 
         if not self.text and not self.file:
             raise ValidationError("Повідомлення не може бути порожнім.")
+
 
 
 

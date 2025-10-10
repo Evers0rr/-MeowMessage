@@ -11,29 +11,51 @@
      {% else %}
          data-username="{{ chat.username }}"
      {% endif %}>
-    
+
     <div class="chat-header">
-        <h2><i class="bi bi-chat-dots"></i> Чат</h2>
+        {% if chat_type == 'group' %}
+            <h2><i class="bi bi-people"></i> Чат у групі: {{ chat.name }}</h2>
+        {% else %}
+            <h2>
+                <img src="{{ chat.avatar.url|default:'/media/avatars/default.jpg' }}" alt="avatar" class="chat-avatar">
+                Чат з {{ chat.username }}
+            </h2>
+        {% endif %}
     </div>
 
     <div id="chat-messages" class="chat-box">
         {% if messages %}
-            {% for message in messages %}
+            {% for message in messages reversed %}
                 <div class="message {% if message.sender == user %}my-message{% else %}other-message{% endif %}">
-                    <span class="sender"><i class="bi bi-person-circle"></i> {{ message.sender.username }}</span>:
-                    <span class="text">{{ message.text }}</span>
+                    <div class="message-header">
+                        <img src="{{ message.sender.avatar.url|default:'/media/avatars/default.jpg' }}" alt="avatar" class="msg-avatar">
+                        <span class="sender">{{ message.sender.username }}</span>
+                        <span class="timestamp">{{ message.created_at|date:"d.m.Y | H:i" }}</span>
+                    </div>
+
+                    {% if message.text %}
+                        <div class="text">{{ message.text }}</div>
+                    {% endif %}
+
                     {% if message.file %}
                         <div class="attachment">
-                            <a href="{{ message.file.url }}" target="_blank">
-                                <i class="bi bi-paperclip"></i> Відкрити вкладення
-                            </a>
+                            {% with message.file.url|lower as f_url %}
+                                {% if ".jpg" in f_url or ".png" in f_url or ".jpeg" in f_url or ".gif" in f_url or ".webp" in f_url %}
+                                    <img src="{{ message.file.url }}" alt="Image" class="chat-image">
+                                {% elif ".mp4" in f_url or ".webm" in f_url or ".mov" in f_url or ".avi" in f_url %}
+                                    <video src="{{ message.file.url }}" controls class="chat-video"></video>
+                                {% else %}
+                                    <a href="{{ message.file.url }}" target="_blank">
+                                        <i class="bi bi-paperclip"></i> {{ message.file.name }}
+                                    </a>
+                                {% endif %}
+                            {% endwith %}
                         </div>
                     {% endif %}
-                    <span class="timestamp"><i class="bi bi-clock"></i> {{ message.created_at|date:"H:i" }}</span>
                 </div>
             {% endfor %}
         {% else %}
-            <div id="no-messages" class="no-messages">Поки що немає повідомлень</div>
+            <div id="no-messages" class="no-messages">💬 Поки що немає повідомлень</div>
         {% endif %}
     </div>
 
@@ -41,14 +63,21 @@
         {% csrf_token %}
         <div class="chat-input-area">
             <textarea id="message-text" placeholder="Введіть повідомлення..."></textarea>
+            
             <input type="file" id="message-file" style="display: none;">
+            
+            <div class="file-preview" id="file-preview" style="display: none;">
+                <span id="file-name"></span>
+                <button type="button" id="remove-file">&times;</button>
+            </div>
+            
             <div class="chat-actions">
                 <button type="button" id="attach-btn"><i class="bi bi-paperclip"></i></button>
                 <button type="submit" id="send-btn"><i class="bi bi-send"></i></button>
             </div>
         </div>
-        <div id="file-name"></div>
     </form>
 </div>
+
 <script src="{% static 'chat/js/chat_box.js' %}"></script>
 {% endblock %}

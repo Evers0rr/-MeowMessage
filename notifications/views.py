@@ -14,7 +14,13 @@ class NotificationListView(LoginRequiredMixin, ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        return Notification.objects.filter(recipient=self.request.user).order_by('-created_at')
+        return (
+            Notification.objects
+            .filter(recipient=self.request.user)
+            .select_related('sender', 'friend_request', 'group_invitation')
+            .order_by('-created_at')
+        )
+
 
 @login_required
 @require_POST
