@@ -1,0 +1,308 @@
+.roles-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 40px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+}
+
+.roles-container h1 {
+    color: #2c3e50;
+    font-size: 2em;
+    margin-bottom: 35px;
+    font-weight: 700;
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f8f9fa;
+    position: relative;
+}
+
+.roles-container h1:after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background: #2c3e50;
+}
+
+.roles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.role-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e8e8e8;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.role-card:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.role-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    border-color: #d0d0d0;
+}
+
+.role-card:hover:before {
+    background: #2c3e50;
+}
+
+.kick-form {
+    margin-right: 15px;
+}
+
+.kick-btn {
+    background: #fff;
+    border: 2px solid #e74c3c;
+    color: #e74c3c;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.kick-btn:before {
+    content: '🚪';
+    margin-right: 8px;
+}
+
+.kick-btn:hover {
+    background: #e74c3c;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+}
+
+.kick-btn:active {
+    transform: translateY(0);
+}
+
+.role-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f8f9fa;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.role-card:hover .role-avatar {
+    border-color: #2c3e50;
+    transform: scale(1.05);
+}
+
+.role-info {
+    flex: 1;
+}
+
+.role-username {
+    font-weight: 700;
+    font-size: 1.3em;
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.role-username:before {
+    content: '👤';
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+.role-current {
+    color: #7f8c8d;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.role-current:before {
+    content: '🎯';
+    opacity: 0.7;
+}
+
+.role-actions select {
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 2px solid #bdc3c7;
+    font-weight: 600;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.3s ease;
+    min-width: 150px;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+.role-actions select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.role-actions select:hover {
+    border-color: #95a5a6;
+}
+
+.role-actions option {
+    padding: 10px;
+    font-weight: 600;
+}
+
+.role-actions option[value="member"] {
+    color: #27ae60;
+}
+
+.role-actions option[value="moderator"] {
+    color: #f39c12;
+}
+
+.role-actions option[value="admin"] {
+    color: #e74c3c;
+}
+
+.role-actions option[value="owner"] {
+    color: #9b59b6;
+}
+
+.alert {
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 2px solid;
+    font-weight: 600;
+    text-align: center;
+    animation: slideInDown 0.5s ease;
+}
+
+.alert-success {
+    color: #27ae60;
+    background: #d5f4e6;
+    border-color: #27ae60;
+}
+
+.roles-container p {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 1.1em;
+    padding: 60px 40px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 2px dashed #e0e0e0;
+    margin: 0;
+}
+
+.roles-container p:before {
+    content: '👥';
+    font-size: 2em;
+    display: block;
+    margin-bottom: 15px;
+    opacity: 0.7;
+}
+
+.role-card {
+    animation: slideInUp 0.5s ease;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .roles-container {
+        padding: 25px 20px;
+        margin: 20px 10px;
+    }
+    
+    .role-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .kick-form {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .role-info {
+        text-align: center;
+    }
+    
+    .role-actions select {
+        min-width: 100%;
+    }
+}
+
+.role-card:after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #27ae60;
+    box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+}
+
+.roles-container p {
+    transition: all 0.3s ease;
+}
+
+.roles-container p:hover {
+    transform: scale(1.02);
+    border-color: #bdc3c7;
+}

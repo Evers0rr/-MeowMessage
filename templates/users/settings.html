@@ -1,0 +1,149 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Налаштування профілю{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/setting_profile_style.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="settings-container">
+    <h1>Налаштування профілю</h1>
+
+    <form id="profile-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="settings-grid">
+            <div class="settings-sidebar">
+                <div class="avatar-section">
+                    {% if user.avatar %}
+                        <img id="avatar-img" src="{{ user.avatar.url }}" alt="Аватар">
+                    {% else %}
+                        <img id="avatar-img" src="{% static 'avatars/default_avatar.png' %}" alt="Аватар">
+                    {% endif %}
+                    
+                    <div class="avatar-controls">
+                        <label for="avatarInput" class="file-input-label">
+                            <span>Обрати зображення</span>
+                            <input type="file" id="avatarInput" name="avatar" accept="image/*" hidden>
+                        </label>
+                        
+                        {% if user.avatar %}
+                            <button type="button" id="clear-avatar-btn" class="btn-danger">
+                                Видалити аватар
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-form">
+                <div class="form-grid">
+                    <div class="form-column">
+                        <div class="form-group">
+                            {{ form.first_name.label_tag }}
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="error-message">{{ form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.last_name.label_tag }}
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="error-message">{{ form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.status.label_tag }}
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                                <div class="error-message">{{ form.status.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-column">
+                        <div class="form-group">
+                            {{ form.current_email.label_tag }}
+                            {{ form.current_email }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.new_email.label_tag }}
+                            {{ form.new_email }}
+                            {% if form.new_email.errors %}
+                                <div class="error-message">{{ form.new_email.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.country.label_tag }}
+                            {{ form.country }}
+                            {% if form.country.errors %}
+                                <div class="error-message">{{ form.country.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-full-width">
+                            <div class="form-group">
+                                {{ form.bio.label_tag }}
+                                {{ form.bio }}
+                                {% if form.bio.errors %}
+                                    <div class="error-message">{{ form.bio.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>                                      
+
+                        <div class="cover-section">
+                            <h3>Обкладинка профілю</h3>
+                        
+                            <div class="cover-preview-container"
+                                 data-clear-url="{% url 'clear-cover' %}"
+                                 data-csrf-token="{{ csrf_token }}">
+                                {% if user.cover_image %}
+                                    <img id="cover-preview" src="{{ user.cover_image.url }}" alt="Обкладинка">
+                                {% else %}
+                                    <div id="cover-preview" class="cover-placeholder">
+                                        <span>Немає обкладинки</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        
+                            <div class="cover-controls">
+                                <label for="coverImageInput" class="file-input-label">
+                                    <span>Обрати фото</span>
+                                    <input type="file" id="coverImageInput" name="cover_image" accept="image/*" hidden>
+                                </label>
+                            
+                                {% if user.cover_image %}
+                                    <button type="button" id="clear-cover-btn" class="btn-danger">
+                                        Видалити обкладинку
+                                    </button>
+                                {% endif %}
+                            </div>
+                        
+                            <div class="cover-tips">
+                                <small>📸 Рекомендований розмір обкладинки: <b>1920×600px</b></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Зберегти зміни</button>
+            </div>
+        </div>
+    </form>
+
+    {% if success %}
+    <div class="success-message">
+        <p>Зміни успішно збережено!</p>
+    </div>
+    {% endif %}
+</div>
+
+<script src="{% static 'users/js/settings.js' %}"></script>
+{% endblock %}

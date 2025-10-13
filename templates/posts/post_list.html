@@ -1,0 +1,186 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Пости{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/post_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="posts-container">
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">📝 Пости</h1>
+            <p class="page-subtitle">Останні публікації від ваших друзів, підписок та груп</p>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'posts:create-post' %}" class="create-post-btn">✨ Створити пост</a>
+            <a href="{% url 'posts:my-posts' %}" class="create-post-btn secondary">📚 Мої пости</a>
+        </div>
+    </div>
+
+    <div class="posts-grid">
+        <div class="posts-column">
+            <div class="column-header">
+                <h3 class="column-title">👥 Останні пости друзів</h3>
+                <a href="{% url 'posts:category-posts' category='friends' %}" class="see-more">Перейти до інших →</a>
+            </div>
+
+            {% if friends_posts %}
+                {% for post in friends_posts %}
+                <article class="post-card">
+                    <div class="post-title">
+                        <a href="{% url 'posts:post-detail' pk=post.pk %}">{{ post.title|default:"(без заголовку)" }}</a>
+                    </div>
+
+                    <div class="post-author">
+                        <a href="{% url 'profile' username=post.author.username %}" class="author-link">
+                            <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" class="author-avatar" alt="{{ post.author.username }}">
+                            <div class="author-info">
+                                <span class="author-name">{{ post.author.username }}</span>
+                                <span class="post-date">{{ post.created_at|timesince }} тому</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="post-content">
+                        {{ post.content|truncatewords:30 }}
+                    </div>
+
+                    <div class="post-actions">
+                        <a href="{% url 'posts:post-detail' pk=post.pk %}" class="read-more-link">Читати повністю →</a>
+                    </div>
+                </article>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>📭 Немає постів друзів</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="posts-column">
+            <div class="column-header">
+                <h3 class="column-title">⭐ Останні пости підписок</h3>
+                <a href="{% url 'posts:category-posts' category='subscriptions' %}" class="see-more">Перейти до інших →</a>
+            </div>
+
+            {% if subscriptions_posts %}
+                {% for post in subscriptions_posts %}
+                <article class="post-card">
+                    <div class="post-title">
+                        <a href="{% url 'posts:post-detail' pk=post.pk %}">{{ post.title|default:"(без заголовку)" }}</a>
+                    </div>
+
+                    <div class="post-author">
+                        <a href="{% url 'profile' username=post.author.username %}" class="author-link">
+                            <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" class="author-avatar" alt="{{ post.author.username }}">
+                            <div class="author-info">
+                                <span class="author-name">{{ post.author.username }}</span>
+                                <span class="post-date">{{ post.created_at|timesince }} тому</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="post-content">
+                        {{ post.content|truncatewords:30 }}
+                    </div>
+
+                    <div class="post-actions">
+                        <a href="{% url 'posts:post-detail' pk=post.pk %}" class="read-more-link">Читати повністю →</a>
+                    </div>
+                </article>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>📭 Немає постів підписок</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="posts-column">
+            <div class="column-header">
+                <h3 class="column-title">👥 Останні пости спільнот</h3>
+                <a href="{% url 'posts:category-posts' category='groups' %}" class="see-more">Перейти до інших →</a>
+            </div>
+
+            {% if group_posts %}
+                {% for gpost in group_posts %}
+                <article class="post-card">
+                    <div class="post-title">
+                        <a href="{% url 'groups:group-post-detail' group_pk=gpost.group.pk pk=gpost.pk %}">
+                            {{ gpost.title|default:"(без заголовку)" }}
+                        </a>
+                    </div>
+
+                    <div class="post-author">
+                        <a href="{% url 'profile' username=gpost.author.username %}" class="author-link">
+                            <img src="{{ gpost.author.avatar.url|default:'/media/avatars/default.jpg' }}" class="author-avatar" alt="{{ gpost.author.username }}">
+                            <div class="author-info">
+                                <span class="author-name">{{ gpost.author.username }}</span>
+                                <span class="post-date">{{ gpost.created_at|timesince }} тому</span>
+                            </div>
+                        </a>
+                        <span class="in-group">
+                            в <a href="{% url 'groups:group_detail' gpost.group.pk %}">{{ gpost.group.name }}</a>
+                        </span>
+                    </div>
+
+                    <div class="post-content">
+                        {{ gpost.content|truncatewords:30 }}
+                    </div>
+
+                    <div class="post-actions">
+                        <a href="{% url 'groups:group-post-detail' group_pk=gpost.group.pk pk=gpost.pk %}" class="read-more-link">Читати повністю →</a>
+                    </div>
+                </article>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>📭 Немає постів груп</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="posts-column">
+            <div class="column-header">
+                <h3 class="column-title">🌍 Останні публічні пости</h3>
+                <a href="{% url 'posts:category-posts' category='public' %}" class="see-more">Перейти до інших →</a>
+            </div>
+
+            {% if public_posts %}
+                {% for post in public_posts %}
+                <article class="post-card">
+                    <div class="post-title">
+                        <a href="{% url 'posts:post-detail' pk=post.pk %}">{{ post.title|default:"(без заголовку)" }}</a>
+                    </div>
+
+                    <div class="post-author">
+                        <a href="{% url 'profile' username=post.author.username %}" class="author-link">
+                            <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" class="author-avatar" alt="{{ post.author.username }}">
+                            <div class="author-info">
+                                <span class="author-name">{{ post.author.username }}</span>
+                                <span class="post-date">{{ post.created_at|timesince }} тому</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="post-content">
+                        {{ post.content|truncatewords:30 }}
+                    </div>
+
+                    <div class="post-actions">
+                        <a href="{% url 'posts:post-detail' pk=post.pk %}" class="read-more-link">Читати повністю →</a>
+                    </div>
+                </article>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>📭 Немає публічних постів</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

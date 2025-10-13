@@ -1,0 +1,17 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Запросити користувача{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Запросити користувача до групи "{{ group.name }}"</h2>
+    <form method="post" id="invite-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Запросити</button>
+    </form>
+</div>
+
+<script src="{% static 'groups/js/invitations.js' %}" defer></script>
+{% endblock %}

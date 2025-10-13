@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}MeowMessage{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {% block head %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    {% block extra_css %}{% endblock %}
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/jpeg">
+</head>
+
+<body>
+    <header>
+        {% block header %}{% endblock %}
+    </header>
+
+    <nav>
+        {% include "base/navbar.html" %}
+    </nav>
+
+    <main class="container my-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="text-center py-3">
+        {% block footer %}© 2025 MeowMessage{% endblock %}
+    </footer>
+
+    {% block scripts %}
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const toggleBtn = document.getElementById('mobileToggle');
+          const links = document.getElementById('navLinks');
+          if (toggleBtn) {
+              toggleBtn.addEventListener('click', () => {
+                  links.classList.toggle('mobile-open');
+              });
+          }
+        
+          document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+              btn.addEventListener('click', e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const dd = btn.closest('.dropdown');
+              
+                  document.querySelectorAll('.dropdown').forEach(d => {
+                      if (d !== dd) d.classList.remove('open');
+                  });
+                
+                  dd.classList.toggle('open');
+              });
+          });
+        
+          document.addEventListener('click', () => {
+              document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+          });
+      });
+    </script>
+    {% endblock %}
+</body>
+</html>
+

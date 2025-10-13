@@ -1,0 +1,83 @@
+{% load static %}
+<nav class="navbar">
+  <div class="nav-inner">
+      <a href="{% url 'home' %}" class="brand-container">
+        <img src="{% static 'img/icon.png' %}" alt="Logo" class="brand-logo">
+        <span class="brand">Meowmessage</span>
+      </a>
+
+    <div class="spacer"></div>
+
+    <div class="nav-links" id="navLinks">
+      <div class="dropdown">
+        <span class="nav-link dropdown-toggle">Групи</span>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="{% url 'groups:list' %}">
+            <i class="bi bi-collection"></i> Список груп
+          </a>
+          <a class="dropdown-item" href="{% url 'groups:my-groups' %}">
+            <i class="bi bi-people-fill"></i> Мої групи
+          </a>
+          <div class="dropdown-sep"></div>
+          <a class="dropdown-item" href="{%  url 'groups:create' %}">
+            <i class="bi bi-plus-circle"></i> Створити групу
+          </a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <span class="nav-link dropdown-toggle">Друзі</span>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="{% url 'friends:list' %}">
+             <i class="bi bi-people"></i> Список друзів
+          </a>
+          <div class="dropdown-sep"></div>
+          <a class="dropdown-item" href="#">
+            <i class="bi bi-chat-dots"></i> Групові чати
+          </a>
+        </div>
+      </div>
+
+      <a class="nav-link" href="{% url 'notifications:list' %}">
+        Сповіщення
+        {% if unread_notifications_count and unread_notifications_count > 0 %}
+          <span class="badge">{{ unread_notifications_count }}</span>
+        {% endif %}
+      </a>
+
+      {% if request.user.is_authenticated %}
+      <div class="dropdown">
+        <span class="nav-link dropdown-toggle">{{ request.user.username }}</span>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="{% url 'profile' username=request.user.username %}">
+            <i class="bi bi-person-circle"></i> Профіль
+          </a>
+          <a class="dropdown-item" href="{% url 'settings' %}">
+            <i class="bi bi-gear"></i> Налаштувати
+          </a>
+          <a class="dropdown-item" href="{% url 'posts:posts-list' %}">
+           <i class="bi bi-journal-text"></i> Пости
+          </a>
+          {% if request.user.is_staff %}
+          <a class="dropdown-item" href="/admin/">
+            <i class="bi bi-shield-lock"></i> Адмінка
+          </a>
+          {% endif %}
+          <div class="dropdown-sep"></div>
+          <form action="{% url 'logout' %}" method="post" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="dropdown-item" style="width:100%;text-align:left;background:none;border:0;cursor:pointer;color:inherit;">
+              <i class="bi bi-box-arrow-right"></i>Вийти
+            </button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+        <a class="nav-link" href="{% url 'login' %}">Увійти</a>
+        <a class="nav-link" href="{% url 'register' %}">Реєстрація</a>
+      {% endif %}
+    </div>
+
+    <button id="mobileToggle" class="mobile-toggle" aria-label="Меню">☰</button>
+  </div>
+</nav>

@@ -1,0 +1,166 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Профіль {{ profile_user.username }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile_style.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-container">
+    <div class="profile-cover-container">
+        {% if profile_user.cover_image %}
+            <div class="profile-cover image-cover" style="background-image: url('{{ profile_user.cover_image.url }}')"></div>
+        {% else %}
+            <div class="profile-cover default-cover"></div>
+        {% endif %}
+        <div class="cover-overlay"></div>
+    </div>
+
+    <div class="profile-content">
+        <div class="profile">
+            <div class="profile-sidebar">
+                <div id="avatar-block">
+                    <img id="avatar-img" src="{{ profile_user.avatar.url|default:'/media/avatars/default.jpg' }}" alt="Аватар">
+                </div>
+                <div class="status-block">
+                    <strong>Статус:</strong> {{ profile_user.status|default:"Не вказано" }}
+                </div>
+
+                {% if not is_own_profile and user.is_authenticated %}
+                <div class="action-buttons">
+                    <form method="post" action="{% url 'friends:toggle_subscribe' profile_user.username %}" class="action-form subscribe-form">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn subscribe-btn {% if is_subscribed %}subscribed{% endif %}">
+                            {% if is_subscribed %}Відписатися{% else %}Підписатися{% endif %}
+                        </button>
+                    </form>
+                    <form method="post" 
+                          action="{% if is_friend %}{% url 'friends:remove_friend' profile_user.username %}{% else %}{% url 'friends:friend_request' profile_user.username %}{% endif %}" 
+                          class="action-form friend-form">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn friend-btn {% if is_friend %}friend{% endif %}">
+                            {% if is_friend %}Видалити з друзів{% else %}Додати в друзі{% endif %}
+                        </button>
+                    </form>
+                    <div class="profile-stats">
+                        <span>{{ subscribers_count }} підписників</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="profile-stats">
+                    <span>{{ subscribers_count }} підписників</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="profile-info">
+                <div class="info-column">
+                    <p><strong>Нікнейм:</strong> {{ profile_user.username|default:"Не вказано" }}</p>
+                    <p><strong>Ім'я:</strong> {{ profile_user.first_name|default:"Не вказано" }}</p>
+                    <p><strong>Прізвище:</strong> {{ profile_user.last_name|default:"Не вказано" }}</p>
+                </div>
+                <div class="info-column">
+                    <p><strong>Пошта:</strong> {{ profile_user.email|default:"Не вказано" }}</p>
+                    <p><strong>Країна:</strong> {{ profile_user.country|default:"Не вказано" }}</p>
+                    <p><strong>Статус конфіденційності:</strong> {{ profile_user.get_privacy_status_display }}</p>
+                </div>
+                
+                <div class="bio-block">
+                    <h3>БІО</h3>
+                    <p>{{ profile_user.bio|default:"Не вказано" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <div class="section-header">
+                <h3>Групи до яких належить ({{ groups_count }})</h3>
+            </div>
+            
+            {% if groups %}
+            <div class="groups-grid" id="groups-container">
+                {% for group in groups %}
+                    <div class="group-card {% if forloop.counter > 6 %}hidden-group{% endif %}">
+                        <a href="{% url 'groups:group_detail' group.id %}" class="group-link">
+                            <div class="group-avatar">
+                                <img src="{{ group.avatar.url|default:'/media/group_avatars/default_group.png' }}" 
+                                     alt="{{ group.name }}" 
+                                     class="group-img">
+                            </div>
+                            <div class="group-info">
+                                <h4 class="group-name">{{ group.name }}</h4>
+                                <p class="group-members">{{ group.members.count }} учасників</p>
+                                <p class="group-description">{{ group.description|default:"Опис відсутній"|truncatewords:10 }}</p>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>Користувач ще не приєднався до жодної групи</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="profile-section">
+            <h3>Друзі ({{ friends_count }})</h3>
+            
+            {% if friends %}
+            <ul class="users-list" id="friends-container">
+                {% for friend in friends %}
+                    <li class="user-item {% if forloop.counter > 12 %}hidden-friend{% endif %}">
+                        <a href="{% url 'profile' username=friend.username %}" class="user-link">
+                            <img src="{{ friend.avatar.url|default:'/media/avatars/default.jpg' }}" 
+                                 alt="{{ friend.username }}" 
+                                 class="user-avatar">
+                            <span class="username">{{ friend.username }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty-state">
+                <p>У користувача поки що немає друзів</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="profile-section">
+            <h3>Останні пости</h3>
+            
+            {% if posts %}
+            <div class="posts-list">
+                {% for post in posts %}
+                    <div class="post-item">
+                        <div class="post-header">
+                            <a href="{% url 'profile' username=post.author.username %}" class="user-link">
+                                <img src="{{ post.author.avatar.url|default:'/media/avatars/default.jpg' }}" 
+                                     alt="{{ post.author.username }}" 
+                                     class="user-avatar">
+                                <span class="username">{{ post.author.username }}</span>
+                            </a>
+                            <span class="post-time">{{ post.created_at|timesince }} тому</span>
+                        </div>
+                        <p class="post-content">{{ post.content|truncatewords:30 }}</p>
+                        {% if post.content|wordcount > 30 %}
+                        <div class="post-actions">
+                            <a href="#" class="read-more-link">Читати повністю →</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>Користувач ще не опублікував жодного поста</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script src="{% static 'users/js/profile-actions.js' %}" defer></script>
+{% endblock %}

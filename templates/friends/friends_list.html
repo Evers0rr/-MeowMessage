@@ -1,0 +1,65 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Мої друзі{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/friends_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="friends-container">
+    <div class="friends-header">
+        <h1>Мої друзі</h1>
+        <div class="friends-count">
+            <span class="count-number">{{ friends_count }}</span>
+            <span class="count-text">друзів</span>
+        </div>
+    </div>
+
+    <div class="friends-list">
+        {% for friend_data in friends %}
+        <div class="friend-item">
+            <div class="friend-info">
+                <a href="{% url 'profile' username=friend_data.user.username %}" class="friend-link">
+                    <img src="{{ friend_data.user.avatar.url|default:'/media/avatars/default.jpg' }}"
+                         alt="{{ friend_data.user.username }}"
+                         class="friend-avatar">
+                    <div class="friend-details">
+                        <h3>{{ friend_data.user.username }}</h3>
+                        <p class="friend-status">
+                            <strong>Статус:</strong>
+                            {{ friend_data.user.status|default:"Не вказано" }}
+                        </p>
+                        <p class="friend-since">Друзі з {{ friend_data.friends_since|date:"d.m.Y" }}</p>
+                    </div>
+                </a>     
+                {% if friend_data.user.username %}
+                <a href="{% url 'chat:private-chat-page' username=friend_data.user.username %}" 
+                   class="chat-btn" title="Написати повідомлення">
+                    <i class="bi bi-chat-dots"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-friends">
+            <div class="no-friends-icon">👥</div>
+            <h2>Поки що у вас немає друзів :(</h2>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Попередня</a>
+        {% endif %}
+        <span class="pagination-info">Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Наступна</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

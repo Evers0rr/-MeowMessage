@@ -1,0 +1,21 @@
+{% extends "base/basic.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Реєстрація | ClearTask{% endblock %}
+
+{% block content %}
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="mb-4">📝 Реєстрація</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        {% if email_sent %}
+          <p>Перевірте вашу пошту. На неї відправлено лист для підтвердження акаунту.</p>
+        {% endif %}
+        <button type="submit" class="btn btn-success">Зареєструватися</button>
+        <a href="{% url 'login' %}" class="btn btn-link">Уже маєте акаунт? Увійти</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

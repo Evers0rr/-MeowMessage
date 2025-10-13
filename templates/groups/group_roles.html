@@ -1,0 +1,148 @@
+{% extends "base/basic.html" %}
+{% block title %}Керування ролями — {{ group.name }}{% endblock %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/group_roles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="roles-container">
+    <h1>Учасники групи "{{ group.name }}"</h1>
+
+    <div id="kick-message" style="display: none;" class="alert alert-success"></div>
+
+    <div class="roles-list">
+        {% for item in members_data %}
+        <div class="role-card" id="user-{{ item.membership.user.id }}">
+            {% if user_priority > item.priority %}
+            <form method="post" action="{% url 'groups:kick-member' group.id item.membership.user.id %}" 
+                  class="kick-form" 
+                  onsubmit="return confirmKick('{{ item.membership.user.username }}', this)">
+                {% csrf_token %}
+                <button type="submit" class="kick-btn" title="Вигнати з групи">
+                    Вигнати
+                </button>
+            </form>
+            {% endif %}
+
+            <img src="{{ item.membership.user.avatar.url|default:'/media/avatars/default.jpg' }}" 
+                 alt="{{ item.membership.user.username }}" 
+                 class="role-avatar">
+
+            <div class="role-info">
+                <span class="role-username">{{ item.membership.user.username }}</span>
+                <span class="role-current">Поточна роль: {{ item.membership.get_role_display }}</span>
+            </div>
+
+            <div class="role-actions">
+                {% if user_priority > item.priority %}
+                <select data-user-id="{{ item.membership.user.id }}" 
+                        data-username="{{ item.membership.user.username }}" 
+                        class="role-select"
+                        title="Змінити роль користувача">
+                    <option value="member" {% if item.membership.role == "member" %}selected{% endif %}>👥 Учасник</option>
+                    <option value="moderator" {% if item.membership.role == "moderator" %}selected{% endif %}>🛡️ Модератор</option>
+                    <option value="admin" {% if item.membership.role == "admin" %}selected{% endif %}>⚙️ Адмін</option>
+                    <option value="owner" {% if item.membership.role == "owner" %}selected{% endif %}>👑 Власник</option>
+                </select>
+                {% else %}
+                <span class="role-locked">🔒 Недоступно</span>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p>Поки що немає учасників у групі</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 1000;';
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+function confirmKick(username, form) {
+    if (!confirm(`Ви впевнені, що хочете вигнати користувача "${username}"?`)) {
+        return false;
+    }
+    
+    event.preventDefault();
+    kickUser(form);
+    return false;
+}
+
+function kickUser(form) {
+    const formData = new FormData(form);
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showNotification(data.message, 'success');
+            
+            const userCard = document.getElementById(`user-${data.user_id}`);
+            if (userCard) {
+                userCard.style.animation = 'slideOutRight 0.5s ease';
+                setTimeout(() => userCard.remove(), 500);
+            }
+        } else {
+            showNotification(data.message || 'Помилка при вигнанні', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Сталася помилка', 'error');
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".role-select").forEach(select => {
+        select.addEventListener("change", function() {
+            const userId = this.dataset.userId;
+            const username = this.dataset.username;
+            const role = this.value;
+            const roleDisplay = this.options[this.selectedIndex].text;
+
+            if (!confirm(`Змінити роль користувача "${username}" на "${roleDisplay}"?`)) {
+                this.value = this.querySelector("option[selected]").value;
+                return;
+            }
+
+            fetch("{% url 'groups:update-role' group.id 0 %}".replace("0", userId), {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `role=${role}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    showNotification(`Роль користувача ${username} змінена на ${roleDisplay}`, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showNotification(data.message || "Помилка при зміні ролі", 'error');
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

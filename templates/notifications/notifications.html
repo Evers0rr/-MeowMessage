@@ -1,0 +1,89 @@
+{% extends "base/basic.html" %}
+{% load static %}
+
+{% block title %}Сповіщення{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/notification.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="notifications-container">
+
+    <div class="notifications-header">
+        <h1>Сповіщення</h1>
+        <a href="#" class="btn btn-outline-primary settings-btn">
+          <i class="bi bi-gear"></i> Налаштувати
+        </a>
+    </div>
+
+    <div class="notifications-list">
+        {% for notification in notifications %}
+        <div class="notification-item {% if not notification.is_read %}unread{% else %}read{% endif %}"
+             data-id="{{ notification.id }}"
+             data-mark-url="{% url 'notifications:mark_read' notification.id %}">
+            <div class="notification-header">
+                <img src="{% if notification.sender and notification.sender.avatar %}{{ notification.sender.avatar.url }}{% else %}{% static 'avatars/default.jpg' %}{% endif %}"
+                     alt="{{ notification.sender.username|default:'User' }}"
+                     class="notification-avatar">
+                <div class="notification-info">
+                    <p class="notification-message">{{ notification.get_message }}</p>
+                    <small class="notification-time">{{ notification.created_at|timesince }} тому</small>
+                </div>
+            </div>
+
+            {% if notification.notification_type == 'friend_request' %}
+              <div class="notification-actions">
+                <form class="action-form notify-action" method="post"
+                      action="{% url 'friends:friend_request_action' notification.friend_request.id 'accept' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Прийняти</button>
+                </form>
+                <form class="action-form notify-action" method="post"
+                      action="{% url 'friends:friend_request_action' notification.friend_request.id 'reject' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Відхилити</button>
+                </form>
+              </div>
+
+            {% elif notification.notification_type == 'group_invitation' and notification.group_invitation %}
+              <div class="notification-actions">
+                {% if notification.group_invitation.status == "pending" %}
+                  <form class="action-form notify-action" method="post"
+                        action="{% url 'groups:group-invite-accept' notification.group_invitation.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Приєднатися</button>
+                  </form>
+                  <form class="action-form notify-action" method="post"
+                        action="{% url 'groups:group-invite-decline' notification.group_invitation.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Відхилити</button>
+                  </form>
+                {% elif notification.group_invitation.status == "accepted" %}
+                  <p class="text-success">✅ Ви вже приєдналися до групи</p>
+                {% elif notification.group_invitation.status == "declined" %}
+                  <p class="text-muted">❌ Ви відхилили запрошення</p>
+                {% endif %}
+              </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="no-notifications">Немає сповіщень</p>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Попередня</a>
+        {% endif %}
+        <span class="pagination-info">Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Наступна</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<script src="{% static 'notifications/js/notifications.js' %}" defer></script>
+{% endblock %}
